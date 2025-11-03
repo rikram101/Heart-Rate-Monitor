@@ -8,6 +8,8 @@ app.set("view engine", "ejs");
 // Setting the directory for ejs templates
 app.set("views", path.join(__dirname, "views"));
 
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
   res.render("home");
 });
