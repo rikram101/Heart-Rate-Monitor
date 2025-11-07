@@ -20,6 +20,10 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
+app.get("/index", (req, res) => {
+  res.render("index");
+});
+
 app.listen(8080, () => {
   console.log("Serving on port 8080");
 });
