@@ -1,7 +1,6 @@
 const express = require("express");
-const path = require("path");
-
 const app = express();
+const path = require("path");
 
 require("./models/Physician");
 
@@ -34,6 +33,8 @@ app.get("/test-physician", async (req, res) => {
     console.error(err);
     res.status(500).send("Error saving physician");
   }
+app.get("/index", (req, res) => {
+  res.render("index");
 });
 
 app.listen(8080, () => {
