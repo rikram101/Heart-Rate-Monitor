@@ -1,0 +1,38 @@
+body {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+  min-height: 100vh;
+  /* background-color: black; */
+}
+canvas {
+  position: absolute;
+}
+
+#heartImg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  max-width: 40vw;
+  max-height: 60vh;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.5);
+  transition: transform 0.7s ease-in-out;
+}
+
+#slogan {
+  position: absolute;
+  bottom: 70px; /* adjust top or bottom as you like */
+  width: 100%;
+  text-align: center;
+  font-family: "Momo Signature", cursive;
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: rgba(255, 0, 0, 5); /* heart-like pink-red */
+
+  /* glowing border/fade effect */
+  /* text-shadow: 0 0 5px #ff4c6d, 0 0 10px #ff4c6d, 0 0 20px #ff4c6d,
+    0 0 30px #ff4c6d, 0 0 40px #ff4c6d, 0 0 50px #ff4c6d; */
+
+  pointer-events: none; /* text won't interfere with canvas interaction */
+}
