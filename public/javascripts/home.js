@@ -10,6 +10,30 @@ window.requestAnimFrame = (function () {
 })();
 
 const heartImg = document.getElementById("heartImg");
+const slogan = document.getElementById("slogan");
+const text =
+  "Measure your heart beat accurately and effectively now, uncompromised health";
+slogan.textContent = "";
+let charIndex = 0;
+
+function typeSlogan() {
+  if (charIndex < text.length) {
+    slogan.textContent += text.charAt(charIndex);
+    charIndex++;
+    setTimeout(typeSlogan, 100); // typing speed (lower = faster)
+  } else {
+    // Optional: make it loop (delete and retype)
+    setTimeout(() => {
+      slogan.textContent = "";
+      charIndex = 0;
+      typeSlogan();
+    }, 2000); // wait 2s after finishing before restarting
+  }
+}
+
+typeSlogan();
+
+// updateSlogan();
 
 var canvas = document.getElementById("canvas"),
   context = canvas.getContext("2d"),
@@ -46,15 +70,35 @@ var yScale = 5.2; // taller
 // Apply scaling to all points
 points = points.map((p) => ({ x: p.x * xScale, y: p.y * yScale }));
 
-function triggerHeartBeat(scale = 1.2, duration = 100) {
+function triggerHeartBeat(scale = 1.2, duration = 200) {
+  heartImg.style.transition = `transform ${duration * 2}ms ease-in-out`;
   heartImg.style.transform = `translate(-50%, -50%) scale(${scale})`;
   setTimeout(() => {
+    heartImg.style.transition = `transform ${duration / 2}ms ease-in`;
     heartImg.style.transform = `translate(-50%, -50%) scale(1)`;
   }, duration);
 }
 
-context.fillStyle = "rgba(255, 0, 0, 1)";
+function startDoubleHeartBeat() {
+  function loopHeartBeat() {
+    // First beat
+    triggerHeartBeat();
+    // Second beat shortly after
+    setTimeout(() => {
+      triggerHeartBeat();
+    }, 300);
+    // Repeat every 1.5 seconds
+    setTimeout(loopHeartBeat, 2500);
+  }
+
+  loopHeartBeat();
+}
+
+// Start once everything is ready
 render();
+startDoubleHeartBeat();
+
+context.fillStyle = "rgba(255, 0, 0, 1)";
 function animateTo() {
   function dist(x1, x2, y1, y2) {
     var dx = x1 - x2,
@@ -71,11 +115,6 @@ function animateTo() {
     ball.y,
     point.y + points[current_point].y
   );
-    // to make heartbeat faster
-    if (points[current_point].y > 20) {
-      // adjust threshold for peak
-      triggerHeartBeat(1.2, 100); // scale up to 1.2 for 100ms
-    }
   var speedMultiplier = 2;
   if (dis.d > 1) {
     var s = Math.abs(dis.dy) > 13 ? 2 * speedMultiplier : 1 * speedMultiplier;
