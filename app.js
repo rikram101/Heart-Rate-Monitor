@@ -28,13 +28,13 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
-app.get("/user", (req, res) => {
-  res.render("user");
+app.get("/register", (req, res) => {
+  res.render("register");
 });
 
-app.post("/user", async (req, res) => {
-  console.log("🔥🔥🔥 HIT POST /user 🔥🔥🔥");
-  console.log("📥 POST /user body:", req.body);
+app.post("/register", async (req, res) => {
+  console.log("🔥🔥🔥 HIT POST /register 🔥🔥🔥");
+  console.log("📥 POST /register body:", req.body);
 
   const { username, email, password } = req.body;
 
