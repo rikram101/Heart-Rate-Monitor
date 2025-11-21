@@ -1,6 +1,9 @@
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const http = require("http");
+const { Server } = require("socket.io");
+const { spawn } = require("child_process");
 const app = express();
 
 const User = require("./models/Users");
@@ -145,6 +148,93 @@ app.get("/users", async (req, res) => {
   }
 });
 
-app.listen(8080, () => {
+// Create HTTP server and attach Socket.IO
+const server = http.createServer(app);
+const io = new Server(server);
+
+// Spawn Particle CLI `serial monitor` and stream lines to connected clients
+let particleProc = null;
+let connectedClients = 0;
+
+function startParticleMonitor() {
+  if (particleProc) return;
+  console.log("Starting Particle serial monitor...");
+  particleProc = spawn("particle", ["serial", "monitor"]);
+
+  particleProc.stdout.setEncoding("utf8");
+  particleProc.stdout.on("data", data => {
+    data.split(/\r?\n/).forEach(line => {
+      if (line && line.trim().length) {
+        console.log("[particle]", line);
+        io.emit("serial", line);
+      }
+    });
+  });
+
+  particleProc.stderr.on("data", d => {
+    const s = d.toString();
+    console.error("[particle stderr]", s);
+    io.emit("serial", `[particle error] ${s}`);
+  });
+
+  particleProc.on("close", code => {
+    console.log("Particle serial monitor exited with code", code);
+    particleProc = null;
+    io.emit("serial", `[particle exited: ${code}]`);
+  });
+
+  particleProc.on("error", err => {
+    console.error("Failed to spawn Particle CLI:", err);
+    io.emit("serial", `[particle spawn error] ${err.message}`);
+    particleProc = null;
+  });
+}
+
+function stopParticleMonitor() {
+  if (!particleProc) return;
+  console.log("Stopping Particle serial monitor...");
+  try {
+    particleProc.kill();
+  } catch (err) {
+    console.error("Error killing Particle process:", err);
+  }
+  particleProc = null;
+}
+
+io.on("connection", socket => {
+  connectedClients++;
+  console.log("Socket connected:", socket.id, "(clients=", connectedClients, ")");
+  // start monitor when first client connects
+  if (connectedClients === 1) startParticleMonitor();
+
+  // allow client to manually start/stop the monitor
+  socket.on("startMonitor", () => {
+    console.log("Client requested startMonitor", socket.id);
+    startParticleMonitor();
+    socket.emit("status", { running: !!particleProc });
+  });
+
+  socket.on("stopMonitor", () => {
+    console.log("Client requested stopMonitor", socket.id);
+    stopParticleMonitor();
+    socket.emit("status", { running: !!particleProc });
+  });
+
+  // report current status on request
+  socket.on("getStatus", () => {
+    socket.emit("status", { running: !!particleProc, clients: connectedClients });
+  });
+
+  socket.on("disconnect", () => {
+    connectedClients--;
+    console.log("Socket disconnected:", socket.id, "(clients=", connectedClients, ")");
+    // stop monitor when no clients remain
+    if (connectedClients <= 0) {
+      stopParticleMonitor();
+    }
+  });
+});
+
+server.listen(8080, () => {
   console.log("Serving on port 8080");
 });

@@ -4,3 +4,56 @@
 <form action="/logout" method="POST">
   <button type="submit">Logout</button>
 </form>
+
+<h2>Device Serial Output</h2>
+<div>
+  <button id="startBtn">Start Monitor</button>
+  <button id="stopBtn">Stop Monitor</button>
+  <span id="status" style="margin-left:12px">Status: <strong>unknown</strong></span>
+</div>
+
+<pre id="serialLog" style="height:300px;overflow:auto;background:#111;color:#0f0;padding:8px;border-radius:4px;">[waiting for data]</pre>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const log = document.getElementById('serialLog');
+  const statusEl = document.getElementById('status');
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+
+  function appendLine(line){
+    if (!line || !line.trim()) return;
+    // remove initial placeholder if present
+    if (log.textContent.trim() === '[waiting for data]') log.textContent = '';
+    const el = document.createElement('div');
+    el.textContent = line;
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  socket.on('connect', ()=>{
+    console.log('socket connected');
+    socket.emit('getStatus');
+  });
+
+  socket.on('serial', function(line){
+    appendLine(line);
+  });
+
+  socket.on('status', function(s){
+    statusEl.innerHTML = 'Status: <strong>' + (s.running ? 'running' : 'stopped') + '</strong>' + ' (clients=' + (s.clients||'?') + ')';
+  });
+
+  socket.on('connect_error', (err)=>{
+    appendLine('[socket connect_error] ' + err.message);
+    console.error('socket connect_error', err);
+  });
+
+  startBtn.addEventListener('click', ()=>{
+    socket.emit('startMonitor');
+  });
+  stopBtn.addEventListener('click', ()=>{
+    socket.emit('stopMonitor');
+  });
+</script>
