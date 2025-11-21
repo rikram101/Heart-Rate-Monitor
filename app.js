@@ -41,7 +41,16 @@ app.use(session(sessionConfig));
 app.use(passport.initialize());
 app.use(passport.session());
 // authenticate method is from passport
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(
+  new LocalStrategy(
+    {
+      // This tells Passport to look for req.body.email
+      // Because we have set out username as email in schema and passport under the hood looks for username while authenticating
+      usernameField: "email",
+    },
+    User.authenticate()
+  )
+);
 
 // How to store user in the session
 passport.serializeUser(User.serializeUser());
