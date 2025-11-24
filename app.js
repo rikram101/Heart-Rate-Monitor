@@ -1,18 +1,20 @@
 const express = require("express");
-const app = express();
 const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
+const ejsMate = require("ejs-mate");
+
+const app = express();
 
 // Routes
 const userRoutes = require("./routes/users");
 
-require("./db"); // To run mongoose.connect() code from db.js
+// To run mongoose.connect() code from db.js
+require("./db");
 
-const Physician = require("./models/physician");
-const User = require("./models/user");
-
+// Set the engine to use ejs-mate instead of the normal engine that is used to parse ejs
+app.engine("ejs", ejsMate);
 // Telling express to use ejs as the templating engine
 app.set("view engine", "ejs");
 // Setting the directory for ejs templates
@@ -21,6 +23,9 @@ app.use(express.static("public"));
 
 // For express to parse from req data
 app.use(express.urlencoded({ extended: true }));
+
+const Physician = require("./models/physician");
+const User = require("./models/user");
 
 // The session
 const sessionConfig = {
