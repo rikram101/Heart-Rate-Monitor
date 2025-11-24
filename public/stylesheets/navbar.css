@@ -11,7 +11,7 @@ body {
 .navbar {
   display: flex;
   justify-content: space-between;
-  padding: 64px 0;
+  padding: 40px 50px;
 }
 .navbar .left {
   font-size: 32px;
@@ -20,10 +20,10 @@ body {
 .navbar .right {
   width: 400px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
 }
-.navbar .right a {
+.navbar a {
   text-decoration: none;
   color: black;
 }

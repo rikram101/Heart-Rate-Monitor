@@ -96,8 +96,8 @@ app.get("/dashboard", (req, res) => {
   res.render("dashboard");
 });
 
-app.get("/index", (req, res) => {
-  res.render("index");
+app.get("/about", (req, res) => {
+  res.render("about");
 });
 
 app.listen(8080, () => {
