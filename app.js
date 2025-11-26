@@ -25,7 +25,7 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
 const Physician = require("./models/physician");
-const User = require("./models/user");
+const Patient = require("./models/user");
 
 // The session
 const sessionConfig = {
@@ -47,20 +47,30 @@ app.use(passport.initialize());
 app.use(passport.session());
 // authenticate method is from passport
 passport.use(
+  "patient-local",
   new LocalStrategy(
     {
       // This tells Passport to look for req.body.email
       // Because we have set out username as email in schema and passport under the hood looks for username while authenticating
       usernameField: "email",
     },
-    User.authenticate()
+    Patient.authenticate()
+  )
+);
+passport.use(
+  "physician-local",
+  new LocalStrategy(
+    {
+      usernameField: "email",
+    },
+    Physician.authenticate()
   )
 );
 
 // How to store user in the session
-passport.serializeUser(User.serializeUser());
+passport.serializeUser(Patient.serializeUser());
 // How to get user out of the session
-passport.deserializeUser(User.deserializeUser());
+passport.deserializeUser(Patient.deserializeUser());
 
 app.use("/", userRoutes);
 

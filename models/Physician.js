@@ -9,6 +9,12 @@ const PhysicianSchema = new Schema({
     unique: true,
     trim: true,
   },
+  licenseId: {
+    type: String,
+    required: true,
+    unique: true, // Medical License IDs should typically be unique
+    trim: true,
+  },
   // One-to-many: list of patients or users
   patients: [
     {
