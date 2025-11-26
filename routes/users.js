@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const User = require("../models/user");
+const User = require("../models/patient");
 const Physician = require("../models/physician");
 
 // Determines which Passport strategy (Patient or Physician) to use

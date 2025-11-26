@@ -25,7 +25,7 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
 const Physician = require("./models/physician");
-const Patient = require("./models/user");
+const Patient = require("./models/patient");
 
 // The session
 const sessionConfig = {
