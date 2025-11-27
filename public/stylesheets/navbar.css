@@ -13,8 +13,8 @@ body {
   justify-content: space-between;
   padding: 40px 50px;
   background-color: #25252b;
-  border-bottom: 2px solid #ff2770; /* The neon pink border */
-  box-shadow: 0 0 15px rgba(255, 39, 112, 0.5); /* The glowing shadow effect */
+  border-bottom: 5px solid #ff2770; /* The neon pink border */
+  box-shadow: 0 0 10px #ff2770; /* The glowing shadow effect */
   position: relative;
   /* z-index: 10; */
 }
