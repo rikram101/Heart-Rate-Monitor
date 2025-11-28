@@ -7,6 +7,7 @@ const DeviceSchema = new Schema({
   // Additional fields, like last_reading, frequency, etc., go here
   last_reading_bpm: { type: Number },
   last_reading_recorded: { type: Date },
+  reading_freq: { type: Number },
 });
 
 module.exports = mongoose.model("Device", DeviceSchema);
