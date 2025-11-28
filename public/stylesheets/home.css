@@ -22,7 +22,7 @@ canvas {
   font-weight: 400;
   font-style: normal;
   font-size: 2.5rem;
-  color: rgba(255, 0, 0, 5); /* heart-like pink-red */
+  color: #ff2770; /* heart-like pink-red */
 
   /* glowing border/fade effect */
   /* text-shadow: 0 0 5px #ff4c6d, 0 0 10px #ff4c6d, 0 0 20px #ff4c6d,
