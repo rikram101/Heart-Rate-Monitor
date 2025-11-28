@@ -4,6 +4,7 @@ const session = require("express-session");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const ejsMate = require("ejs-mate");
+const methodOverried = require("method-override");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use(express.static("public"));
 
 // For express to parse from req data
 app.use(express.urlencoded({ extended: true }));
+app.use(methodOverried("_method"));
 
 const Physician = require("./models/physician");
 const Patient = require("./models/patient");
@@ -109,6 +111,11 @@ app.post("/dashboard", async (req, res) => {
   res.redirect(`/device/${device._id}`);
 });
 
+app.get("/device/:id/edit", async (req, res) => {
+  const device = await Device.findById(req.params.id);
+  res.render("patient/edit", { device });
+});
+
 app.get("/device/:id", async (req, res) => {
   const device = await Device.findById(req.params.id);
   res.render("patient/show_device", {
@@ -117,6 +124,14 @@ app.get("/device/:id", async (req, res) => {
     page_script: null,
     title: "About Us",
   });
+});
+
+app.put("/device/:id", async (req, res) => {
+  const { id } = req.params;
+  const device = await Device.findByIdAndUpdate(id, {
+    ...req.body.device,
+  });
+  res.redirect(`/device/${device._id}`);
 });
 
 app.get("/about", (req, res) => {
