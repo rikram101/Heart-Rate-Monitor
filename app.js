@@ -20,6 +20,8 @@ app.use(express.static("public"));
 
 // For express to parse from req data
 app.use(express.urlencoded({ extended: true }));
+// For JSON telemetry/webhooks
+app.use(express.json());
 
 // The session
 const sessionConfig = {
@@ -57,6 +59,20 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use("/", userRoutes);
+// Telemetry API routes (unauthenticated endpoint for device webhooks)
+app.use(require("./routes/telemetry"));
+
+// Debug route to list mounted paths (remove in production)
+app.get("/debug/routes", (req, res) => {
+  const routes = [];
+  app._router.stack.forEach((m) => {
+    if (m.route && m.route.path) {
+      const methods = Object.keys(m.route.methods).filter((k) => m.route.methods[k]);
+      routes.push({ path: m.route.path, methods });
+    }
+  });
+  res.json(routes);
+});
 
 app.get("/", (req, res) => {
   res.render("home");
@@ -77,6 +93,9 @@ app.get("/index", (req, res) => {
   res.render("index");
 });
 
-app.listen(8080, () => {
-  console.log("Serving on port 8080");
+const PORT = process.env.PORT || 8080;
+const HOST = process.env.HOST || "0.0.0.0";
+
+app.listen(PORT, HOST, () => {
+  console.log(`Serving on http://${HOST}:${PORT}`);
 });
