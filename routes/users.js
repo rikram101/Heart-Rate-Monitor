@@ -54,8 +54,11 @@ router.post("/register", async (req, res) => {
   }
   const user = new RegisterModel(userDetails);
   const registered_user = await RegisterModel.register(user, password);
-  console.log(registered_user);
-  res.redirect("/patient/dashboard");
+  req.login(registered_user, (err) => {
+    if (err) return next(err);
+    req.flash("success", "Welcome to Yelp Camp!");
+    res.redirect("/patient/dashboard");
+  });
 });
 
 router.post("/login", authenticateUserOrPhysician, (req, res) => {
