@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const DeviceSchema = new Schema({
-  name: { type: String, required: true },
+  name: {
+    type: String,
+    required: true,
+    default: "Unnamed Device",
+  },
   serial_number: { type: String, required: true, unique: true },
   // Additional fields, like last_reading, frequency, etc., go here
   last_reading_bpm: { type: Number },

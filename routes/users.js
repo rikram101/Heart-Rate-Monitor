@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const User = require("../models/patient");
 const Physician = require("../models/physician");
+const Device = require("../models/device");
 
 // Determines which Passport strategy (Patient or Physician) to use
 // based on the 'role' selected in the login form.
@@ -32,7 +33,7 @@ router.get("/login", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { email, password, role, deviceId, licenseId } = req.body;
+  const { email, password, role, serialNumber, licenseId } = req.body;
 
   // User object to upload
   let userDetails = { email };
@@ -43,7 +44,12 @@ router.post("/register", async (req, res) => {
 
   if (role === "patient") {
     // for patient use deviceId
-    userDetails.devices = [deviceId];
+    const newDevice = new Device({
+      serial_number: serialNumber,
+    });
+    await newDevice.save();
+    deviceIdToLink = newDevice._id;
+    userDetails.devices = [deviceIdToLink];
     RegisterModel = User;
     registeredRole = "patient";
   } else if (role === "physician") {
