@@ -5,12 +5,13 @@ const { isLoggedIn } = require("../middleware");
 
 // Show all the devices
 router.get("/dashboard", isLoggedIn, async (req, res) => {
-  const patient_devices = await Device.find({});
+  const userDeviceIds = req.user.devices;
+  const patient_devices = await Device.find({ _id: { $in: userDeviceIds } });
   res.render("patient/dashboard", {
     patient_devices,
     page_css: null,
     page_script: null,
-    title: "About Us",
+    title: "Dashboard",
   });
 });
 
