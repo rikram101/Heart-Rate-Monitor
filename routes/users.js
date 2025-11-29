@@ -55,13 +55,13 @@ router.post("/register", async (req, res) => {
   const user = new RegisterModel(userDetails);
   const registered_user = await RegisterModel.register(user, password);
   console.log(registered_user);
-  res.redirect("/dashboard");
+  res.redirect("/patient/dashboard");
 });
 
 router.post("/login", authenticateUserOrPhysician, (req, res) => {
   // Authentication succeeded. Determine redirect based on the authenticated user's type.
   // We check the model name attached to req.user (provided by Passport).
-  res.redirect("/dashboard"); // Fallback
+  res.redirect("/patient/dashboard"); // Fallback
 });
 
 module.exports = router;
