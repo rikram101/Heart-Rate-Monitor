@@ -6,3 +6,11 @@ module.exports.isLoggedIn = (req, res, next) => {
   }
   next();
 };
+
+// to save the returnTo value from the session (req.session.returnTo) to res.locals
+module.exports.storeReturnTo = (req, res, next) => {
+  if (req.session.returnTo) {
+    res.locals.returnTo = req.session.returnTo;
+  }
+  next();
+};

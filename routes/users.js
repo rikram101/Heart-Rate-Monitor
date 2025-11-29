@@ -4,6 +4,7 @@ const passport = require("passport");
 const User = require("../models/patient");
 const Physician = require("../models/physician");
 const Device = require("../models/device");
+const { storeReturnTo } = require("../middleware");
 
 // Determines which Passport strategy (Patient or Physician) to use
 // based on the 'role' selected in the login form.
@@ -59,19 +60,31 @@ router.post("/register", async (req, res) => {
     registeredRole = "physician";
   }
   const user = new RegisterModel(userDetails);
-  const registered_user = await RegisterModel.register(user, password);
-  req.login(registered_user, (err) => {
+  const registered_patient = await RegisterModel.register(user, password);
+  req.login(registered_patient, (err) => {
     if (err) return next(err);
     req.flash("success", "Welcome to Yelp Camp!");
     res.redirect("/patient/dashboard");
   });
 });
 
-router.post("/login", authenticateUserOrPhysician, (req, res) => {
-  // Authentication succeeded. Determine redirect based on the authenticated user's type.
-  // We check the model name attached to req.user (provided by Passport).
-  res.redirect("/patient/dashboard"); // Fallback
-});
+router.post(
+  "/login",
+  authenticateUserOrPhysician,
+  storeReturnTo,
+  // passport.authenticate logs the user in and clears req.session
+  (req, res) => {
+    req.flash("success", "Welcome back!");
+    const role = req.body.role;
+    const defaultDashboard =
+      role === "physician" ? "/physician/dashboard" : "/patient/dashboard";
+    const redirectUrl = res.locals.returnTo || defaultDashboard;
+    delete req.session.returnTo;
+    // Authentication succeeded. Determine redirect based on the authenticated user's type.
+    // We check the model name attached to req.user (provided by Passport).
+    res.redirect(redirectUrl); // Fallback
+  }
+);
 
 router.get("/logout", (req, res, next) => {
   req.logout(function (err) {
