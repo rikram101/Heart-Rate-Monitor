@@ -43,7 +43,7 @@ router.post("/register", async (req, res) => {
 
   if (role === "patient") {
     // for patient use deviceId
-    userDetails.deviceId = deviceId;
+    userDetails.devices = [deviceId];
     RegisterModel = User;
     registeredRole = "patient";
   } else if (role === "physician") {
