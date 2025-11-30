@@ -1,0 +1,36 @@
+.wrapper {
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #302d2d; /* Fundo claro */
+}
+
+.container {
+  text-align: center;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 15px 20px #ff2770;
+  max-width: 60vw;
+}
+
+.icon-face {
+  font-size: 100px;
+  color: #ff6b6b; /* Cor mais neutra para o ícone */
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 80px;
+  margin-bottom: 10px;
+  font-weight: 700;
+  color: #333;
+}
+
+p {
+  font-size: 18px;
+  margin-bottom: 30px;
+  color: #555;
+}
