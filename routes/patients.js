@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Device = require("../models/device");
-const { isLoggedIn } = require("../middleware");
+const { isLoggedIn, isDeviceOwner } = require("../middleware");
 
 // Show all the devices
 router.get("/dashboard", isLoggedIn, async (req, res) => {
@@ -26,7 +26,7 @@ router.get("/device/new", isLoggedIn, async (req, res) => {
   });
 });
 
-router.post("/dashboard", isLoggedIn, async (req, res) => {
+router.post("/dashboard", isLoggedIn, isDeviceOwner, async (req, res) => {
   // Saving the new device
   const device = new Device(req.body.device);
   await device.save();
@@ -38,7 +38,7 @@ router.post("/dashboard", isLoggedIn, async (req, res) => {
 });
 
 // Edit/Update the info present on device
-router.get("/device/:id/edit", async (req, res) => {
+router.get("/device/:id/edit", isLoggedIn, isDeviceOwner, async (req, res) => {
   const device = await Device.findById(req.params.id);
   res.render("patient/edit", { device });
 });
@@ -51,7 +51,7 @@ router.get("/device/:id", async (req, res) => {
     title: "About Us",
   });
 });
-router.put("/device/:id", async (req, res) => {
+router.put("/device/:id", isLoggedIn, isDeviceOwner, async (req, res) => {
   const { id } = req.params;
   const device = await Device.findByIdAndUpdate(id, {
     ...req.body.device,
@@ -60,7 +60,7 @@ router.put("/device/:id", async (req, res) => {
 });
 
 // Delete a particular device
-router.delete("/device/:id", async (req, res) => {
+router.delete("/device/:id", isLoggedIn, isDeviceOwner, async (req, res) => {
   const { id } = req.params;
   await Device.findByIdAndDelete(id);
   await req.user.updateOne({ $pull: { devices: id } });

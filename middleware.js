@@ -14,3 +14,13 @@ module.exports.storeReturnTo = (req, res, next) => {
   }
   next();
 };
+
+module.exports.isDeviceOwner = async (req, res, next) => {
+  const { id } = req.params;
+  const isOwner = req.user.devices.some((deviceId) => deviceId.equals(id));
+  if (!isOwner) {
+    req.flash("error", "You do not have permission to access this device!");
+    return res.redirect("/patient/dashboard");
+  }
+  next();
+};
