@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const session = require("express-session");
 const passport = require("passport");
+const ExpressError = require("./utils/ExpressError");
 const LocalStrategy = require("passport-local");
 const ejsMate = require("ejs-mate");
 const methodOverried = require("method-override");
@@ -100,6 +101,16 @@ app.get("/about", (req, res) => {
     page_script: null,
     title: "About Us",
   });
+});
+
+app.all(/(.*)/, (req, res, next) => {
+  next(new ExpressError("Page Not Found", 404));
+});
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500 } = err;
+  if (!err.message) err.message = "Oh No, Something Went Wrong!";
+  res.status(statusCode).render("error", { err });
 });
 
 app.listen(8080, () => {
