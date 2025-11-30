@@ -1,3 +1,5 @@
+const { deviceSchema } = require("./validate_schema");
+
 module.exports.isLoggedIn = (req, res, next) => {
   if (!req.isAuthenticated()) {
     req.session.returnTo = req.originalUrl;
@@ -23,4 +25,15 @@ module.exports.isDeviceOwner = async (req, res, next) => {
     return res.redirect("/patient/dashboard");
   }
   next();
+};
+
+// Device validation
+module.exports.validateDevice = (req, res, next) => {
+  const { error } = deviceSchema.validate(req.body);
+  if (error) {
+    const msg = error.details.map((el) => el.message).join(",");
+    throw new ExpressError(msg, 400);
+  } else {
+    next();
+  }
 };

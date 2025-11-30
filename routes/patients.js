@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Device = require("../models/device");
 const catchAsync = require("../utils/catchAsync");
-const { isLoggedIn, isDeviceOwner } = require("../middleware");
+const { isLoggedIn, isDeviceOwner, validateDevice } = require("../middleware");
 
 // Show all the devices
 router.get(
@@ -34,6 +34,7 @@ router.get("/device/new", isLoggedIn, async (req, res) => {
 router.post(
   "/dashboard",
   isLoggedIn,
+  validateDevice,
   catchAsync(async (req, res) => {
     // Saving the new device
     const device = new Device(req.body.device);
@@ -72,6 +73,7 @@ router.put(
   "/device/:id",
   isLoggedIn,
   isDeviceOwner,
+  validateDevice,
   catchAsync(async (req, res) => {
     const { id } = req.params;
     const device = await Device.findByIdAndUpdate(id, {
