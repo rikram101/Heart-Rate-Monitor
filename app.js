@@ -16,8 +16,6 @@ const patientRoutes = require("./routes/patients");
 
 require("./db"); // To run mongoose.connect() code from db.js
 
-const User = require("./models/user");
-
 // Set the engine to use ejs-mate instead of the normal engine that is used to parse ejs
 app.engine("ejs", ejsMate);
 // Telling express to use ejs as the templating engine
