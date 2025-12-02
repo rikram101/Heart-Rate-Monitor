@@ -1,14 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const User = require("../models/patient");
+const Patient = require("../models/patient");
 const Physician = require("../models/physician");
 const Device = require("../models/device");
 const { storeReturnTo } = require("../middleware");
 
 // Determines which Passport strategy (Patient or Physician) to use
 // based on the 'role' selected in the login form.
-const authenticateUserOrPhysician = (req, res, next) => {
+const authenticatePatientOrPhysician = (req, res, next) => {
   // 1. Check for the selected role from the Login form
   const role = req.body.role;
 
@@ -54,7 +54,7 @@ router.post("/register", async (req, res) => {
       await newDevice.save();
       deviceIdToLink = newDevice._id;
       userDetails.devices = [deviceIdToLink];
-      RegisterModel = User;
+      RegisterModel = Patient;
       registeredRole = "patient";
     } else if (role === "physician") {
       // for Physician, use licenseId
@@ -77,7 +77,7 @@ router.post("/register", async (req, res) => {
 
 router.post(
   "/login",
-  authenticateUserOrPhysician,
+  authenticatePatientOrPhysician,
   storeReturnTo,
   // passport.authenticate logs the user in and clears req.session
   (req, res) => {

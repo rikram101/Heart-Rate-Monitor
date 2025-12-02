@@ -73,10 +73,50 @@ passport.use(
   )
 );
 
-// How to store user in the session
-passport.serializeUser(Patient.serializeUser());
-// How to get user out of the session
-passport.deserializeUser(Patient.deserializeUser());
+// // How to store user in the session
+passport.serializeUser(function (user, done) {
+  let userType;
+
+  // Check the model instance to determine the type
+  if (user instanceof Patient) {
+    userType = "Patient";
+  } else if (user instanceof Physician) {
+    userType = "Physician";
+  }
+
+  // Store the user ID AND the type in the session (e.g., { id: '...', type: 'Physician' })
+  done(null, { id: user.id, type: userType });
+});
+
+// How to retrieve user from the session
+passport.deserializeUser(async function (serializedUser, done) {
+  if (!serializedUser || !serializedUser.id || !serializedUser.type) {
+    return done(null, false);
+  }
+
+  const { id, type } = serializedUser;
+  let Model;
+
+  // Select the correct Mongoose model based on the stored type
+  if (type === "Patient") {
+    Model = Patient;
+  } else if (type === "Physician") {
+    Model = Physician;
+  } else {
+    // Should not happen if serialization is correct
+    console.error("Unknown user type detected in session:", type);
+    return done(null, false);
+  }
+
+  try {
+    // Find the user using the correct model
+    const user = await Model.findById(id);
+    // This correctly retrieved user is attached to req.user
+    done(null, user);
+  } catch (e) {
+    done(e);
+  }
+});
 
 app.use((req, res, next) => {
   res.locals.currentUser = req.user;
