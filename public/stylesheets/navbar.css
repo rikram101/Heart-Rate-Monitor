@@ -67,7 +67,7 @@ body {
 }
 
 .mobileNav {
-  width: 80px;
+  width: 160px;
   height: 100vh;
   background-color: #25252b; /* Dark theme background */
   border-left: 2px solid #ff2770;
@@ -87,7 +87,7 @@ body {
   width: 24px;
 }
 .openDrawer {
-  transform: translateX(-160px);
+  transform: translateX(-180px);
 }
 .mobileNav a {
   text-decoration: none;
