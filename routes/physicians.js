@@ -7,6 +7,7 @@ const Physician = require("../models/physician");
 
 // router.use(isLoggedIn, isPhysician);
 
+// show all the physicians
 router.get(
   "/",
   catchAsync(async (req, res) => {
@@ -15,6 +16,19 @@ router.get(
       physicians,
       title: "Physicians",
     });
+  })
+);
+
+// show a particular physician view
+router.get(
+  "/:id",
+  catchAsync(async (req, res) => {
+    const physician = await Physician.findById(req.params.id);
+    if (!physician) {
+      req.flash("error", "Cannot find the Physician!");
+      return res.redirect("/physicians");
+    }
+    res.render("physician/show", { physician });
   })
 );
 
