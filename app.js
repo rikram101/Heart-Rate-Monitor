@@ -133,7 +133,6 @@ app.get("/", (req, res) => {
   res.render("home", {
     page_css: "home.css", // Pass the name of the stylesheet file
     page_script: "home.js",
-    title: "Core-Beat Home",
   });
 });
 
@@ -141,7 +140,6 @@ app.get("/about", (req, res) => {
   res.render("about", {
     page_css: "about.css", // Pass the name of the stylesheet file
     page_script: null,
-    title: "About Us",
   });
 });
 

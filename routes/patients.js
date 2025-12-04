@@ -24,7 +24,6 @@ router.get(
       patient_devices,
       page_css: null,
       page_script: null,
-      title: "Dashboard",
     });
   })
 );
@@ -36,7 +35,6 @@ router.get("/device/new", async (req, res) => {
     device,
     page_css: null,
     page_script: null,
-    title: "About Us",
   });
 });
 
@@ -80,7 +78,6 @@ router.get(
       device,
       page_css: null,
       page_script: null,
-      title: "About Us",
     });
   })
 );
