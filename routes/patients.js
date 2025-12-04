@@ -140,4 +140,34 @@ router.post(
   })
 );
 
+router.delete(
+  "/remove-physician/:physicianId",
+  isLoggedIn,
+  isPatient,
+  isAssignedPhysician,
+  catchAsync(async (req, res) => {
+    const { physicianId } = req.params;
+    const patientId = req.user._id;
+    // Update the Patient Document
+    await Patient.findByIdAndUpdate(patientId, {
+      $pull: { assignedPhysicians: physicianId },
+    });
+
+    // Update the Physician Document
+    const physician = await Physician.findByIdAndUpdate(
+      physicianId,
+      // $addToSet ensures the patientId is only added if it's not already present
+      { $pull: { patients: patientId } }
+    );
+
+    req.flash(
+      "success",
+      `Dr. ${
+        physician.name.split(" ")[1]
+      } successfully removed from your care team.`
+    );
+    res.redirect("/patient/dashboard");
+  })
+);
+
 module.exports = router;
