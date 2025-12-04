@@ -20,11 +20,40 @@ module.exports.storeReturnTo = (req, res, next) => {
   next();
 };
 
+// To check if the curr user is a device owner
 module.exports.isDeviceOwner = async (req, res, next) => {
   const { id } = req.params;
   const isOwner = req.user.devices.some((deviceId) => deviceId.equals(id));
   if (!isOwner) {
     req.flash("error", "You do not have permission to access this device!");
+    return res.redirect("/patient/dashboard");
+  }
+  next();
+};
+
+// to check if the current user is assigned a particular physician
+module.exports.isAssignedPhysician = async (req, res, next) => {
+  const { physicianId } = req.params;
+
+  const patient = await Patient.findById(req.user._id);
+
+  if (!patient) {
+    req.flash("error", "Patient profile not found.");
+    return res.redirect("/login");
+  }
+
+  // 2. Check if the physicianId is included in the patient's assignedPhysicians array.
+  // Use .some() with .equals() for safe MongoDB ObjectId comparison,
+  // similar to how you checked for device ownership.
+  const isAssigned = patient.assignedPhysicians.some((assignedId) =>
+    assignedId.equals(physicianId)
+  );
+
+  if (!isAssigned) {
+    req.flash(
+      "error",
+      "You are not assigned to this physician and cannot view this information."
+    );
     return res.redirect("/patient/dashboard");
   }
   next();

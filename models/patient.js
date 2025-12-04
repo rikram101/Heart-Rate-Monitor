@@ -20,10 +20,12 @@ const PatientSchema = new Schema({
       ref: "Device",
     },
   ],
-  assignedPhysician: {
-    type: Schema.Types.ObjectId,
-    ref: "Physician",
-  },
+  assignedPhysicians: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Physician",
+    },
+  ],
 });
 
 PatientSchema.plugin(passportLocalMongoose, {

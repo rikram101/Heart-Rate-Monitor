@@ -31,11 +31,10 @@ router.get(
     }
     const patient = await Patient.findById(req.user._id);
     let isChosen = false;
-    if (
-      patient.assignedPhysician &&
-      physician._id.equals(patient.assignedPhysician)
-    ) {
-      isChosen = true;
+    if (patient && patient.assignedPhysicians) {
+      isChosen = patient.assignedPhysicians.some((assignedId) =>
+        assignedId.equals(physician._id)
+      );
     }
     res.render("physician/show", { physician, isChosen });
   })

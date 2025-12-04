@@ -9,6 +9,7 @@ const {
   isDeviceOwner,
   validateDevice,
   isPatient,
+  isAssignedPhysician,
 } = require("../middleware");
 
 router.use(isLoggedIn, isPatient);
@@ -111,41 +112,32 @@ router.delete(
 );
 
 // choose a physician
-router.post("/choose-physician/:physicianId", isLoggedIn, async (req, res) => {
-  const { physicianId } = req.params;
-  const patientId = req.user._id;
-
-  try {
+router.post(
+  "/choose-physician/:physicianId",
+  isLoggedIn,
+  isPatient,
+  catchAsync(async (req, res) => {
+    const { physicianId } = req.params;
+    const patientId = req.user._id;
     // Update the Patient Document
-    const patient = await Patient.findByIdAndUpdate(
-      patientId,
-      // Set the reference to the chosen physician
-      { assignedPhysician: physicianId }
-    );
+    await Patient.findByIdAndUpdate(patientId, {
+      $addToSet: { assignedPhysicians: physicianId },
+    });
 
     // Update the Physician Document
-    const physician = await Physician.findById(physicianId);
-
-    if (!physician) {
-      req.flash("error", "Physician not found.");
-      return res.redirect("/physicians");
-    }
-
-    // Check if the patient is already in the array to prevent duplicates
-    if (!physician.patients.includes(patientId)) {
-      physician.patients.push(patientId);
-      await physician.save();
-    }
+    const physician = await Physician.findByIdAndUpdate(
+      physicianId,
+      // $addToSet ensures the patientId is only added if it's not already present
+      { $addToSet: { patients: patientId } },
+      { new: true } // Ensures the returned 'physician' object is the updated one
+    );
 
     req.flash(
       "success",
       `You have chosen Dr. ${physician.name.split(" ")[1]} as your Physician!`
     );
     res.redirect("/patient/dashboard");
-  } catch (e) {
-    req.flash("error", "An error occurred while assigning the physician.");
-    res.redirect("/physicians");
-  }
-});
+  })
+);
 
 module.exports = router;
