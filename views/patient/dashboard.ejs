@@ -4,8 +4,20 @@
 <a href="/patient/device/new" style="color: black; font-weight: bold"
   >Add a device</a
 >
-<ul>
-  <% for (let device of patient_devices){%>
-  <li><a href="/patient/device/<%= device._id %>"><%= device.name %></a></li>
-  <% }%>
-</ul>
+
+<% for (let device of patient_devices){%>
+<div class="card" style="margin: 20px 0">
+  <div class="card-header">
+    Data readings are taken every <b><%= device.reading_freq %></b> minutes.
+  </div>
+  <div class="card-body">
+    <h5 class="card-title"><%= device.name %></h5>
+    <p class="card-text">
+      With supporting text below as a natural lead-in to additional content.
+    </p>
+    <a href="/patient/device/<%= device._id %>" class="btn btn-primary"
+      >View Data</a
+    >
+  </div>
+</div>
+<% }%>
