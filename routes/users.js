@@ -63,11 +63,17 @@ router.post("/register", async (req, res) => {
       registeredRole = "physician";
     }
     const user = new RegisterModel(userDetails);
-    const registered_patient = await RegisterModel.register(user, password);
-    req.login(registered_patient, (err) => {
+    const registered_user = await RegisterModel.register(user, password);
+    // const registered_patient = await RegisterModel.register(user, password);
+    req.login(registered_user, (err) => {
       if (err) return next(err);
-      req.flash("success", "Welcome to Yelp Camp!");
-      res.redirect("/patient/dashboard");
+      req.flash("success", "Welcome to Core-Beat!");
+      const redirectPath =
+        registeredRole === "physician"
+          ? "/physician/dashboard"
+          : "/patient/dashboard";
+
+      res.redirect(redirectPath);
     });
   } catch (e) {
     req.flash("error", e.message);
