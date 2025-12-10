@@ -4,9 +4,9 @@
     <div class="col-12 col-lg-8 offset-lg-2">
       <div class="card shadow">
         <div class="card-body">
-          <h5 class="card-title">Complete Your Profile</h5>
-          <p class="text-muted">
-            Fill out the remaining details before accessing your dashboard.
+          <h5 class="card-title text-primary">Complete Your Profile</h5>
+          <p class="text-muted border-bottom pb-2">
+            Please fill out your professional details to finalize your account.
           </p>
           <img
             src="<%= currentUser.image %>"
@@ -26,10 +26,13 @@
             class="validated-form"
             novalidate
           >
+            <h6 class="text-secondary mb-3">Permanent Account Information</h6>
             <div class="mb-3">
-              <label class="form-label" for="email">Email (Registered)</label>
+              <label class="form-label text-muted" for="email"
+                >Email (Cannot be changed)</label
+              >
               <input
-                class="form-control"
+                class="form-control bg-light border-secondary"
                 type="email"
                 id="email"
                 name="email"
@@ -39,9 +42,11 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label" for="licenseId">License ID</label>
+              <label class="form-label text-muted" for="licenseId"
+                >License ID (Cannot be changed)</label
+              >
               <input
-                class="form-control"
+                class="form-control bg-light border-secondary"
                 type="text"
                 id="licenseId"
                 name="licenseId"
@@ -50,7 +55,9 @@
               />
             </div>
 
-            <hr />
+            <hr class="my-4" />
+
+            <h6 class="text-primary mb-3">Professional Details</h6>
 
             <div class="mb-3">
               <label class="form-label" for="name">Full Name</label>
@@ -73,7 +80,11 @@
                 id="image"
                 name="image"
                 placeholder="e.g., https://yourimage.com/photo.jpg"
+                value="<%= currentUser.image !== 'https://placehold.co/400x400/007bff/ffffff?text=Physician%20Photo' ? currentUser.image : '' %>"
               />
+              <div class="form-text">
+                Paste a direct link (URL) to your profile picture.
+              </div>
             </div>
 
             <div class="mb-3">
@@ -102,8 +113,8 @@
               ></textarea>
             </div>
 
-            <button class="btn btn-primary btn-block mt-3">
-              Complete Profile & Go to Dashboard
+            <button class="btn btn-primary btn-lg w-100 mt-4">
+              Complete Profile
             </button>
           </form>
         </div>
