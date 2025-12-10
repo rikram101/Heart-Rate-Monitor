@@ -1,4 +1,4 @@
-const { deviceSchema } = require("./validate_schema");
+const { deviceSchema, physicianProfileSchema } = require("./validate_schema");
 const ExpressError = require("./utils/ExpressError");
 const Patient = require("./models/patient");
 const Physician = require("./models/physician");
@@ -94,4 +94,17 @@ module.exports.isPhysician = (req, res, next) => {
     "You must be logged in as a physician to access this dashboard."
   );
   return res.redirect("/login");
+};
+
+// Middleware to validate the physician profile completion data
+module.exports.validatePhysicianProfile = (req, res, next) => {
+  // We only need the validation function from the schema object
+  const { error } = physicianProfileSchema.validate(req.body);
+  if (error) {
+    // Concatenate all detailed error messages into one string
+    const msg = error.details.map((el) => el.message).join(", ");
+    req.flash("error", msg);
+    return res.redirect("/physician/complete-profile");
+  }
+  next();
 };
