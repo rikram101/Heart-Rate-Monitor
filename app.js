@@ -112,7 +112,7 @@ app.get("/about", (req, res) => {
 });
 
 app.post("/reading", async (req, res) => {
-  const { apiKey, deviceId, heartRate, spo2, raw, timestamp } = req.body;
+  const { apiKey, deviceId, heartRate: hrRaw, spo2: spo2Raw, timestamp } = req.body;
 
   const isValidApiKey = apiKey === API_KEY;
 
@@ -126,11 +126,41 @@ app.post("/reading", async (req, res) => {
     });
   }
 
-  // Basic input validation
-  if (!deviceId || typeof heartRate === "undefined") {
-    return res.status(400).json({
-      message: "Missing required fields: deviceId and heartRate",
+  // ---- Convert values to numbers ----
+  let heartRate = hrRaw !== undefined ? Number(hrRaw) : null;
+  let spo2 = spo2Raw !== undefined ? Number(spo2Raw) : undefined;
+
+  // ---- Handle your sentinel / bad readings ----
+  // Ignore readings with invalid heart rate
+  if (Number.isNaN(heartRate) || heartRate < 0 || heartRate === -999) {
+    console.log("Ignoring reading because heartRate is invalid/sentinel:", hrRaw);
+    return res.status(200).json({
+      message: "Invalid heart rate (sentinel or missing), reading ignored",
+      received: req.body,
     });
+  }
+
+  // Allow spo2 to be missing if it's bad/sentinel
+  if (Number.isNaN(spo2) || spo2 < 0 || spo2 === -999) {
+    console.log("SpO2 is invalid/sentinel, will be stored as undefined:", spo2Raw);
+    spo2 = undefined; // spo2 is optional in the schema
+  }
+
+  if (!deviceId) {
+    return res.status(400).json({
+      message: "Missing deviceId",
+      received: req.body,
+    });
+  }
+
+  // ---- Safely parse device timestamp → readingTime ----
+  let readingTime;
+  if (timestamp !== undefined) {
+    const tsNum = Number(timestamp);
+    if (!Number.isNaN(tsNum)) {
+      // timestamp is in UNIX seconds → convert to ms
+      readingTime = new Date(tsNum * 1000);
+    }
   }
 
   try {
@@ -138,9 +168,9 @@ app.post("/reading", async (req, res) => {
       deviceHardwareId: deviceId,
       heartRate,
       spo2,
-      raw,
-      // If Photon sends a timestamp (e.g., ms since epoch), use it; otherwise default
-      readingTime: timestamp ? new Date(timestamp) : undefined,
+      raw: req.body, // keep full webhook payload if you want
+      // only set readingTime if we parsed a valid date
+      ...(readingTime ? { readingTime } : {}),
     });
 
     await reading.save();
@@ -156,6 +186,7 @@ app.post("/reading", async (req, res) => {
     });
   }
 });
+
 
 
 app.all(/(.*)/, (req, res, next) => {
