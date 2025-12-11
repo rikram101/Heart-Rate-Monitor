@@ -19,6 +19,20 @@ router.get(
   })
 );
 
+router.get(
+  "/dashboard",
+  catchAsync(async (req, res) => {
+    const patientIds = req.user.patients;
+    const patients = await Patient.find({ _id: { $in: patientIds } });
+    res.render("physician/dashboard", {
+      patients,
+      page_css: null,
+      page_script: null,
+      title: "Dashboard",
+    });
+  })
+);
+
 // show a particular physician view
 router.get(
   "/:id",
@@ -40,17 +54,4 @@ router.get(
   })
 );
 
-router.get(
-  "/dashboard",
-  catchAsync(async (req, res) => {
-    const patientIds = req.user.patients;
-    const patients = await Patient.find({ _id: { $in: patientIds } });
-    res.render("physician/dashboard", {
-      patients,
-      page_css: null,
-      page_script: null,
-      title: "Dashboard",
-    });
-  })
-);
 module.exports = router;
