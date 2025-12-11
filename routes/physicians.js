@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Patient = require("../models/patient");
 const catchAsync = require("../utils/catchAsync");
-const { isLoggedIn, isPhysician } = require("../middleware");
+const { isLoggedIn, isPhysician, isPatient } = require("../middleware");
 const Physician = require("../models/physician");
 
 // router.use(isLoggedIn, isPhysician);
@@ -37,6 +37,7 @@ router.get(
 router.get(
   "/:id",
   isLoggedIn,
+  isPatient,
   catchAsync(async (req, res) => {
     const physician = await Physician.findById(req.params.id);
     if (!physician) {
