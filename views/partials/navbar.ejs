@@ -1,10 +1,7 @@
 <header class="navbar">
   <div class="left">
-    <% if(!currentUser) {%>
-    <a href="/">Core-Beat</a></div>
-    <% } else {%>
-      <a href="/patient/dashboard">Core-Beat</a></div>
-    <% } %>
+    <a href="/">Core-Beat</a>
+  </div>
   <nav class="right">
     <a href="/physician">All Physicians</a>
     <a href="/about">About Us</a>
@@ -12,16 +9,20 @@
     <% if(!currentUser) {%>
     <a href="/login">Login/Register</a>
     <% } else {%>
-      <!-- Example single danger button -->
+    <!-- Example single danger button -->
     <div class="btn-group">
-      <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      <button
+        type="button"
+        class="btn btn-info dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
         My Account
       </button>
       <ul class="dropdown-menu dropdown-menu-dark">
-        <li><a class="dropdown-item" href="/patient/dashboard">Dashborad</a></li>
         <li><a class="dropdown-item" href="#">Assigned Physicians</a></li>
         <li><a class="dropdown-item" href="#">Account Info.</a></li>
-        <li><hr class="dropdown-divider"></li>
+        <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item" href="/logout">Logout</a></li>
       </ul>
     </div>
@@ -40,14 +41,21 @@
     <a href="/login">Login/Register</a>
     <% } else {%>
     <div class="btn-group dropstart">
-      <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+      <button
+        type="button"
+        class="btn btn-info dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
         My Account
       </button>
       <ul class="dropdown-menu">
-        <li><a class="dropdown-item" href="/patient/dashboard">Dashborad</a></li>
+        <li>
+          <a class="dropdown-item" href="/patient/dashboard">Dashborad</a>
+        </li>
         <li><a class="dropdown-item" href="#">Assigned Physicians</a></li>
         <li><a class="dropdown-item" href="#">Account Info.</a></li>
-        <li><hr class="dropdown-divider"></li>
+        <li><hr class="dropdown-divider" /></li>
         <li><a class="dropdown-item" href="/logout">Logout</a></li>
       </ul>
     </div>
