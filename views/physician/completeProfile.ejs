@@ -74,16 +74,30 @@
           </div>
 
           <div class="mb-3">
+            <label class="form-label" for="image">Upload Profile Image</label>
+            <input
+              class="form-control"
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+            />
+            <div class="form-text">
+              Select an image file (JPG, PNG) from your device. Leaving this
+              blank will keep your existing photo.
+            </div>
+          </div>
+          <!-- <div class="mb-3">
             <label class="form-label" for="image">Profile Image URL</label>
             <input type="file" name="image" id="image" />
-            <!-- <input
+            <input
               class="form-control"
               type="url"
               id="image"
               name="image"
               placeholder="e.g., https://yourimage.com/photo.jpg"
-              value="<%= currentUser.image !== 'https://placehold.co/400x400/007bff/ffffff?text=Physician%20Photo' ? currentUser.image : '' %>" -->
-            <!-- /> -->
+              value="<%= currentUser.image !== 'https://placehold.co/400x400/007bff/ffffff?text=Physician%20Photo' ? currentUser.image : '' %>"
+             />
             <div class="form-text">
               Paste a direct link (URL) to your profile picture.
               <b>You can leave this field blank to use the default image.</b>
@@ -91,7 +105,7 @@
             <div class="invalid-feedback">
               Paste a direct link (URL) to your profile picture.
             </div>
-          </div>
+          </div> -->
 
           <div class="mb-3">
             <label class="form-label" for="location"

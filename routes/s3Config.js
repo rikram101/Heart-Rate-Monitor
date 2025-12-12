@@ -1,25 +1,28 @@
-const aws = require("aws-sdk");
+const { S3Client } = require("@aws-sdk/client-s3");
 const multer = require("multer");
 const multerS3 = require("multer-s3");
+const path = require("path");
 
-aws.config.update({
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  region: process.env.AWS_REGION,
+const s3Client = new S3Client({
+  region: process.env.AWS_REGION, // e.g., 'us-east-1'
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  },
+  forcePathStyle: true,
 });
-
-const s3 = new aws.S3();
 
 const upload = multer({
   storage: multerS3({
-    s3: s3,
-    bucket: process.env.AWS_BUCKET_NAME, // Your bucket name
-    contentType: multerS3.AUTO_CONTENT_TYPE, // Automatically set file type (jpg/png)
-    acl: "public-read", // MAKE FILE PUBLIC so we can view it
+    s3: s3Client, // Pass the correct S3Client instance
+    bucket: process.env.AWS_BUCKET_NAME,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    acl: "public-read",
     key: function (req, file, cb) {
-      // This defines the file name in the bucket
-      // We prepend Date.now() to avoid name collisions
-      cb(null, Date.now().toString() + "-" + file.originalname);
+      cb(
+        null,
+        `physician-profiles/${Date.now().toString()}-${file.originalname}`
+      );
     },
   }),
   fileFilter: function (req, file, cb) {
@@ -27,5 +30,17 @@ const upload = multer({
     checkFileType(file, cb);
   },
 });
+
+function checkFileType(file, cb) {
+  const filetypes = /jpeg|jpg|png|gif/;
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb("Error: Images Only!");
+  }
+}
 
 module.exports = upload;
