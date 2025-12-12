@@ -44,13 +44,15 @@ router.post("/register", async (req, res) => {
   let registeredRole;
 
   if (role === "patient") {
-    // for patient use deviceId
-    const newDevice = new Device({
-      serial_number: serialNumber,
-    });
-    await newDevice.save();
-    deviceIdToLink = newDevice._id;
-    userDetails.devices = [deviceIdToLink];
+    // for patient use deviceId (optional)
+    userDetails.devices = [];
+    if (serialNumber && serialNumber.trim()) {
+      const newDevice = new Device({
+        serial_number: serialNumber,
+      });
+      await newDevice.save();
+      userDetails.devices = [newDevice._id];
+    }
     RegisterModel = User;
     registeredRole = "patient";
   } else if (role === "physician") {

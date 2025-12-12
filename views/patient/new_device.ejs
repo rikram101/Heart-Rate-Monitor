@@ -3,18 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Campground</title>
+    <title>Add New Device</title>
   </head>
 
   <body>
     <form action="/patient/dashboard" method="POST">
       <div>
-        <label for="name">Name</label>
-        <input type="text" id="name" name="device[name]" />
+        <label for="hardwareId">Hardware ID (Device ID) *</label>
+        <input type="text" id="hardwareId" name="device[hardwareId]" required />
+        <small>The unique ID of your Particle device (e.g., 0a10aced202194944a06754c)</small>
       </div>
       <div>
-        <label for="serial_number">Serial Number</label>
-        <input type="text" id="serial_number" name="device[serial_number]" />
+        <label for="label">Device Label</label>
+        <input type="text" id="label" name="device[label]" placeholder="e.g., My Heart Monitor" />
+        <small>A friendly name for this device (optional)</small>
+      </div>
+      <div>
+        <label for="model">Model</label>
+        <input type="text" id="model" name="device[model]" placeholder="e.g., Photon 2" />
+        <small>Device model (optional)</small>
       </div>
       <button>Add Device</button>
       <a href="/patient/dashboard">Back to dashboard</a>

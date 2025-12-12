@@ -216,8 +216,6 @@ app.post("/reading", async (req, res) => {
   }
 });
 
-
-
 app.all(/(.*)/, (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
 });
@@ -225,6 +223,12 @@ app.all(/(.*)/, (req, res, next) => {
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = "Oh No, Something Went Wrong!";
+  
+  // Ensure currentUser is available for error page navbar
+  if (!res.locals.currentUser) {
+    res.locals.currentUser = req.user || null;
+  }
+  
   res.status(statusCode).render("error", {
     err,
     page_css: "error.css", // Pass the name of the stylesheet file
@@ -232,8 +236,6 @@ app.use((err, req, res, next) => {
     title: "Error",
   });
 });
-
-
 
 app.listen(8080, () => {
   console.log("Serving on port 8080");

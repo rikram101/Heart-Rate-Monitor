@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Device = require("../models/device");
+const Reading = require("../models/reading");
 const catchAsync = require("../utils/catchAsync");
 const { isLoggedIn, isDeviceOwner, validateDevice } = require("../middleware");
 
@@ -36,10 +37,13 @@ router.post(
   isLoggedIn,
   validateDevice,
   catchAsync(async (req, res) => {
-    // Saving the new device
-    const device = new Device(req.body.device);
+    // Saving the new device with owner set to logged-in patient
+    const device = new Device({
+      ...req.body.device,
+      owner: req.user._id,
+    });
     await device.save();
-    // link new device iD to the logged-in patient
+    // link new device ID to the logged-in patient
     req.user.devices.push(device._id);
     await req.user.save();
     req.flash("success", "A new Device was added Successfully");
@@ -105,5 +109,44 @@ router.delete(
     res.redirect("/patient/dashboard");
   })
 );
+
+router.get("/readings", isLoggedIn, (req, res) => {
+  res.render("patient/readings", {
+    title: "My Heart Data",
+    page_css: "patient-readings.css",      // optional
+    page_script: null                      // we’ll use inline JS to keep it minimal
+  });
+});
+
+router.get("/readings/data", isLoggedIn, async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Not authenticated" });
+    }
+
+    // Find all devices owned by this patient
+    const devices = await Device.find({ owner: req.user._id }).select("_id");
+    const deviceIds = devices.map((d) => d._id);
+
+    // Get recent readings for those devices (oldest → newest)
+    const readings = await Reading.find({ device: { $in: deviceIds } })
+      .sort({ readingTime: 1 })
+      .limit(300); // tweak as you like
+
+    res.json({
+      success: true,
+      readings: readings.map((r) => ({
+        heartRate: Number(r.heartRate),
+        spo2: Number(r.spo2),
+        readingTime: r.readingTime,
+      })),
+    });
+  } catch (err) {
+    console.error("Error fetching readings:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+
 
 module.exports = router;

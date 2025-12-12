@@ -4,6 +4,9 @@
 <a href="/patient/device/new" style="color: black; font-weight: bold"
   >Add a device</a
 >
+<a href="/patient/readings" style="color: black; font-weight: bold; margin-left: 1rem"
+  >View My Data</a
+>
 <ul>
   <% for (let device of patient_devices){%>
   <li><a href="/patient/device/<%= device._id %>"><%= device.name %></a></li>

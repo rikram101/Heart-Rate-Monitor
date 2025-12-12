@@ -3,6 +3,11 @@
     <a href="/">Core-Beat</a>
   </div>
   <div class="right">
-    <a href="/login">Login</a>
+    <% if (currentUser) { %>
+      <a href="/patient/dashboard">Dashboard</a>
+      <a href="/logout">Logout</a>
+    <% } else { %>
+      <a href="/login">Login</a>
+    <% } %>
   </div>
 </header>
