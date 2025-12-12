@@ -6,6 +6,7 @@ const {
   isLoggedIn,
   isPhysician,
   validatePhysicianProfile,
+  isPatient,
 } = require("../middleware");
 const Physician = require("../models/physician");
 
