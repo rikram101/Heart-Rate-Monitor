@@ -28,6 +28,12 @@ router.get(
   })
 );
 
+router.get("/account_info", isLoggedIn, isPatient, (req, res) => {
+  res.render("patient/account_info", {
+    currentUser: req.user,
+  });
+});
+
 router.post(
   "/accountInfo",
   isLoggedIn,
