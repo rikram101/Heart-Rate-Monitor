@@ -1,22 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1><%= device.name %></h1>
-    <h2><%= device.serial_number %></h2>
-    <p><a href="/patient/device/<%=device._id%>/edit">Edit</a></p>
-    <a href="/patient/dashboard">Back to dashboard</a>
-    <div>
-      <form
-        action="/patient/device/<%=device._id%>?_method=DELETE"
-        method="POST"
-      >
-        <button>Delete</button>
-      </form>
-    </div>
-  </body>
-</html>
+<% layout('layouts/bootstrap')%>
+<h1><%= device.name %></h1>
+<h2><%= device.serial_number %></h2>
+<p><a href="/patient/device/<%=device._id%>/edit">Edit</a></p>
+<a href="/patient/dashboard">Back to dashboard</a>
+<div>
+  <form action="/patient/device/<%=device._id%>?_method=DELETE" method="POST">
+    <button>Delete</button>
+  </form>
+</div>

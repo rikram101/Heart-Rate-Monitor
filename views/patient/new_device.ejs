@@ -1,23 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Campground</title>
-  </head>
-
-  <body>
-    <form action="/patient/dashboard" method="POST">
-      <div>
-        <label for="name">Name</label>
-        <input type="text" id="name" name="device[name]" />
-      </div>
-      <div>
-        <label for="serial_number">Serial Number</label>
-        <input type="text" id="serial_number" name="device[serial_number]" />
-      </div>
-      <button>Add Device</button>
-      <a href="/patient/dashboard">Back to dashboard</a>
-    </form>
-  </body>
-</html>
+<% layout('layouts/bootstrap')%>
+<form action="/patient/dashboard" method="POST">
+  <div>
+    <label for="name">Name</label>
+    <input type="text" id="name" name="device[name]" />
+  </div>
+  <div>
+    <label for="serial_number">Serial Number</label>
+    <input type="text" id="serial_number" name="device[serial_number]" />
+  </div>
+  <button>Add Device</button>
+  <a href="/patient/dashboard">Back to dashboard</a>
+</form>

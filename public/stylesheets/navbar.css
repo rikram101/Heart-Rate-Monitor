@@ -43,10 +43,17 @@ body {
   color: #ff2770;
   text-shadow: 0 0 10px #ff2770;
 }
-.navbar .right img {
+.navbar ul {
+  background-color: #25252b;
+  border: 1px solid #ff2770;
+}
+.dropdown-divider {
+  background-color: gray;
+}
+/* .navbar .right img {
   width: 24px;
   height: 24px;
-}
+} */
 
 .bar1,
 .bar2,
@@ -82,12 +89,12 @@ body {
   padding: 16px;
   transition: transform 0.3s;
 }
-.mobileNav img {
+/* .mobileNav img {
   height: 24px;
   width: 24px;
-}
+} */
 .openDrawer {
-  transform: translateX(-160px);
+  transform: translateX(-180px);
 }
 .mobileNav a {
   text-decoration: none;

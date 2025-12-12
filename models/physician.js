@@ -9,6 +9,12 @@ const PhysicianSchema = new Schema({
     unique: true,
     trim: true,
   },
+  role: {
+    type: String,
+    enum: ["physician"], // Restrict it to only the string 'physician'
+    default: "physician", // Automatically set this value on creation
+    required: true,
+  },
   image: {
     type: String,
     default:

@@ -19,7 +19,7 @@ const authenticatePatientOrPhysician = (req, res, next) => {
       failureRedirect: "/login",
     })(req, res, next);
   } else {
-    // Default to patient (role === 'patient') or any other role, using the patient-specific strategy
+    // Default to patient (role === 'patient'), using the patient-specific strategy
     passport.authenticate("patient-local", {
       failureFlash: true,
       failureRedirect: "/login",
@@ -62,6 +62,7 @@ router.post("/register", async (req, res) => {
       RegisterModel = Physician;
       registeredRole = "physician";
     }
+    userDetails.role = registeredRole;
     const user = new RegisterModel(userDetails);
     const registered_user = await RegisterModel.register(user, password);
     // const registered_patient = await RegisterModel.register(user, password);

@@ -1,18 +1,43 @@
 <header class="navbar">
   <div class="left">
-    <% if(!currentUser) {%>
-    <a href="/">Core-Beat</a></div>
-    <% } else {%>
-      <a href="/patient/dashboard">Core-Beat</a></div>
-    <% } %>
+    <a href="/">Core-Beat</a>
+  </div>
   <nav class="right">
-    <a href="/physician">Physicians</a>
+    <a href="/physician">All Physicians</a>
     <a href="/about">About Us</a>
     <a href="/references">References</a>
     <% if(!currentUser) {%>
     <a href="/login">Login/Register</a>
     <% } else {%>
-    <a href="/logout">Logout</a>
+    <!-- Example single danger button -->
+    <div class="btn-group">
+      <button
+        type="button"
+        class="btn btn-info dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        My Account
+      </button>
+      <ul class="dropdown-menu dropdown-menu-dark">
+        <li><a class="dropdown-item" href="#">Assigned Physicians</a></li>
+        <% if (currentUser && currentUser.role === 'patient') { %>
+        <li>
+          <a class="dropdown-item" href="/patient/account_info"
+            >Account Info.</a
+          >
+        </li>
+        <% } else if (currentUser && currentUser.role === 'physician') { %>
+        <li>
+          <a class="dropdown-item" href="/physician/complete-profile"
+            >Account Info.</a
+          >
+        </li>
+        <% } %>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+      </ul>
+    </div>
     <% } %>
   </nav>
   <div class="hamburger">
@@ -27,7 +52,37 @@
     <% if(!currentUser) {%>
     <a href="/login">Login/Register</a>
     <% } else {%>
-    <a href="/logout">Logout</a>
+    <div class="btn-group dropstart">
+      <button
+        type="button"
+        class="btn btn-info dropdown-toggle"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        My Account
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <a class="dropdown-item" href="/patient/dashboard">Dashborad</a>
+        </li>
+        <li><a class="dropdown-item" href="#">Assigned Physicians</a></li>
+        <% if (currentUser && currentUser.role === 'patient') { %>
+        <li>
+          <a class="dropdown-item" href="/patient/accountInfo">Account Info.</a>
+        </li>
+        <% } else if (currentUser && currentUser.role === 'physician') { %>
+        <li>
+          <a class="dropdown-item" href="/physician/complete-profile"
+            >Account Info.</a
+          >
+        </li>
+        <% } else { %>
+        <li><a class="dropdown-item" href="/account">Account Info.</a></li>
+        <% } %>
+        <li><hr class="dropdown-divider" /></li>
+        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+      </ul>
+    </div>
     <% } %>
   </nav>
 </header>

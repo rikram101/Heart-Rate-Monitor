@@ -74,6 +74,7 @@ router.get(
 router.get(
   "/:id",
   isLoggedIn,
+  isPatient,
   catchAsync(async (req, res) => {
     const physician = await Physician.findById(req.params.id);
     if (!physician) {

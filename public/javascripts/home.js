@@ -49,6 +49,16 @@ var canvas = document.getElementById("canvas"),
   },
   current_point = 0;
 
+// Handle window resize
+function handleResize() {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+  ball.y = height / 2;
+  point.y = height / 2;
+}
+
+window.addEventListener("resize", handleResize);
+
 var points = [
   { y: 0, x: 20 },
   { y: 0, x: 1 },

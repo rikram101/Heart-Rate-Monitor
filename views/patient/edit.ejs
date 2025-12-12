@@ -1,34 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Campground</title>
-  </head>
-
-  <body>
-    <h1>Edit Devide Info</h1>
-    <form action="/patient/device/<%=device._id%>?_method=PUT" method="POST">
-      <div>
-        <label for="name">Name</label>
-        <input
-          type="text"
-          id="name"
-          name="device[name]"
-          value="<%=device.name %>"
-        />
-      </div>
-      <div>
-        <label for="serial_number">Serial Number</label>
-        <input
-          type="text"
-          id="serial_number"
-          name="device[serial_number]"
-          value="<%=device.serial_number %>"
-        />
-      </div>
-      <button>Update Device Info</button>
-      <a href="/patient/dashboard">Back to dashboard</a>
-    </form>
-  </body>
-</html>
+<% layout('layouts/bootstrap')%>
+<h1>Edit Devide Info</h1>
+<form action="/patient/device/<%=device._id%>?_method=PUT" method="POST">
+  <div>
+    <label for="name">Name</label>
+    <input
+      type="text"
+      id="name"
+      name="device[name]"
+      value="<%=device.name %>"
+    />
+  </div>
+  <div>
+    <label for="serial_number">Serial Number</label>
+    <input
+      type="text"
+      id="serial_number"
+      name="device[serial_number]"
+      value="<%=device.serial_number %>"
+    />
+  </div>
+  <button>Update Device Info</button>
+  <a href="/patient/dashboard">Back to dashboard</a>
+</form>
