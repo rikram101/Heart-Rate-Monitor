@@ -1,7 +1,6 @@
 const express = require("express");
-const multer = require("multer");
-const upload = multer({ dest: "/uploads" });
 const router = express.Router();
+const upload = require("./s3Config");
 const Patient = require("../models/patient");
 const catchAsync = require("../utils/catchAsync");
 const {
@@ -28,7 +27,7 @@ router.get(
 
 router
   .route("/complete-profile")
-  .get("/complete-profile", isLoggedIn, isPhysician, (req, res) => {
+  .get(isLoggedIn, isPhysician, (req, res) => {
     // Render the form. Pass the current user data so fields can be pre-filled (like name).
     res.render("physician/completeProfile", {
       currentUser: req.user,
@@ -37,7 +36,6 @@ router
 
   // You MUST have this route handler defined in your Express router:
   .post(
-    "/complete-profile",
     isLoggedIn,
     isPhysician,
     upload.single("image"),
@@ -46,14 +44,18 @@ router
       const physicianId = req.user._id;
       const { description, location, image, name } = req.body;
 
+      let imageUrl;
+      if (req.file) {
+        // aws-s3-multer adds the 'location' property which is the PUBLIC URL
+        imageUrl = req.file.location;
+      }
+
       await Physician.findByIdAndUpdate(physicianId, {
         $set: {
           description,
           location,
-          image:
-            image ||
-            "https://placehold.co/400x400/007bff/ffffff?text=Physician%20Photo",
           name,
+          ...(imageUrl && { image: imageUrl }),
         },
       });
 
