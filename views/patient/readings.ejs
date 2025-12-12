@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title><%= title || "My Heart Data" %></title>
+
+  <% if (typeof page_css !== "undefined" && page_css) { %>
+    <link rel="stylesheet" href="/stylesheets/<%= page_css %>">
+  <% } %>
+
+  <style>
+    /* Minimal inline styling – keep or move to patient-readings.css */
+    .charts-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      display: grid;
+      gap: 2rem;
+    }
+    .chart-card {
+      padding: 1rem;
+      border-radius: 8px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+      height: 320px;
+      display: flex;
+      flex-direction: column;
+    }
+    .chart-title {
+      margin: 0 0 0.75rem;
+      font-size: 1.1rem;
+      color: #e5e7eb;
+    }
+    .empty-state {
+      text-align: center;
+      color: #cbd5e1;
+      padding: 2rem 1rem;
+    }
+    body {
+      background: #020617;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <% if (typeof include !== "undefined") { %>
+    <%- include("../partials/navbar") %>
+  <% } %>
+
+  <main class="charts-container">
+    <section class="chart-card">
+      <h2 class="chart-title">Heart Rate (bpm)</h2>
+      <canvas id="hrChart"></canvas>
+    </section>
+
+    <section class="chart-card">
+      <h2 class="chart-title">SpO₂ (%)</h2>
+      <canvas id="spo2Chart"></canvas>
+    </section>
+  </main>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    (async function () {
+      try {
+        const res = await fetch("/patient/readings/data");
+        const payload = await res.json();
+
+        if (!payload.success) {
+          console.error("Error loading readings:", payload.message);
+          return;
+        }
+
+        const readings = payload.readings || [];
+
+        // Empty state: show a friendly message if no data
+        if (!readings.length) {
+          const container = document.querySelector('.charts-container');
+          container.innerHTML = `
+            <section class="chart-card">
+              <div class="empty-state">
+                <h2 class="chart-title">No readings yet</h2>
+                <p>When data is available, your Heart Rate and SpO₂ charts will appear here.</p>
+              </div>
+            </section>
+          `;
+          return;
+        }
+
+        // Build arrays for labels and datasets
+        const labels = readings.map(r =>
+          new Date(r.readingTime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+        );
+
+        const heartRates = readings.map(r => r.heartRate);
+        const spo2Values = readings.map(r => r.spo2);
+
+        const hrCtx   = document.getElementById("hrChart").getContext("2d");
+        const spo2Ctx = document.getElementById("spo2Chart").getContext("2d");
+
+        // Heart Rate chart
+        new Chart(hrCtx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Heart Rate (bpm)",
+              data: heartRates,
+              borderColor: "#22d3ee",
+              backgroundColor: "rgba(34, 211, 238, 0.15)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { title: { display: true, text: "Time" } },
+              y: { title: { display: true, text: "bpm" } }
+            }
+          }
+        });
+
+        // SpO2 chart
+        new Chart(spo2Ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "SpO₂ (%)",
+              data: spo2Values,
+              borderColor: "#a78bfa",
+              backgroundColor: "rgba(167, 139, 250, 0.15)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { title: { display: true, text: "Time" } },
+              y: { title: { display: true, text: "SpO₂ (%)" }, suggestedMin: 90, suggestedMax: 100 }
+            }
+          }
+        });
+      } catch (err) {
+        console.error("Failed to initialize charts:", err);
+      }
+    })();
+  </script>
+</body>
+</html>
