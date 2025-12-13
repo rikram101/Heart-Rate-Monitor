@@ -207,11 +207,7 @@ router.delete(
   })
 );
 router.get("/readings", isLoggedIn, (req, res) => {
-  res.render("patient/readings", {
-    title: "My Heart Data",
-    page_css: "patient-readings.css", // optional
-    page_script: null, // we’ll use inline JS to keep it minimal
-  });
+  res.render("patient/readings", {});
 });
 
 router.get("/readings/data", isLoggedIn, async (req, res) => {
@@ -241,6 +237,126 @@ router.get("/readings/data", isLoggedIn, async (req, res) => {
     });
   } catch (err) {
     console.error("Error fetching readings:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Assuming this is inside a patient-specific router that handles authentication
+
+// Helper to get the start and end of the requested day
+function getDateRange(dateString) {
+  const start = new Date(dateString);
+  start.setHours(0, 0, 0, 0); // Start of day
+
+  const end = new Date(dateString);
+  end.setHours(23, 59, 59, 999); // End of day
+  return { start, end };
+}
+
+// Route 1: Detailed Daily View
+router.get("/readings/daily", isLoggedIn, isPatient, async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "patient") {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    // Get the date from the query parameter (e.g., ?date=2025-12-12)
+    const { date } = req.query;
+    if (!date) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Date is required" });
+    }
+
+    const { start, end } = getDateRange(date);
+
+    // 1. Find all devices owned by this patient (using the updated schema)
+    // The patient model now holds the device IDs.
+    const deviceIds = req.user.devices;
+
+    // 2. Fetch readings for the specific day
+    const readings = await Reading.find({
+      device: { $in: deviceIds },
+      readingTime: { $gte: start, $lte: end },
+    }).sort({ readingTime: 1 });
+
+    // 3. Format data into Chart.js {x: time, y: value} pairs
+    const hrData = readings.map((r) => ({
+      x: r.readingTime, // Chart.js handles the formatting from a Date object
+      y: Number(r.heartRate),
+    }));
+
+    const spo2Data = readings.map((r) => ({
+      x: r.readingTime,
+      y: Number(r.spo2),
+    }));
+
+    res.json({
+      success: true,
+      data: { heartRate: hrData, spo2: spo2Data },
+    });
+  } catch (err) {
+    console.error("Error fetching daily readings:", err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Route 2: Weekly Summary View
+router.get("/readings/summary", isLoggedIn, isPatient, async (req, res) => {
+  try {
+    if (!req.user || req.user.role !== "patient") {
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    // 1. Find all device IDs owned by this patient
+    const deviceIds = req.user.devices;
+
+    // 2. Use MongoDB Aggregation to calculate stats
+    const summaryStats = await Reading.aggregate([
+      // Stage 1: Filter by patient devices and time window
+      {
+        $match: {
+          device: { $in: deviceIds },
+          readingTime: { $gte: sevenDaysAgo },
+        },
+      },
+      // Stage 2: Group all matching documents into one group to calculate overall stats
+      {
+        $group: {
+          _id: null,
+          avgHeartRate: { $avg: "$heartRate" },
+          minHeartRate: { $min: "$heartRate" },
+          maxHeartRate: { $max: "$heartRate" },
+          avgSpo2: { $avg: "$spo2" },
+          minSpo2: { $min: "$spo2" },
+          maxSpo2: { $max: "$spo2" },
+        },
+      },
+    ]);
+
+    // 3. Format and return the result
+    const summary = summaryStats[0] || {};
+
+    res.json({
+      success: true,
+      summary: {
+        heartRate: {
+          avg: summary.avgHeartRate ? Math.round(summary.avgHeartRate) : 0,
+          min: summary.minHeartRate || 0,
+          max: summary.maxHeartRate || 0,
+        },
+        spo2: {
+          avg: summary.avgSpo2 ? Math.round(summary.avgSpo2) : 0,
+          min: summary.minSpo2 || 0,
+          max: summary.maxSpo2 || 0,
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching summary readings:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
