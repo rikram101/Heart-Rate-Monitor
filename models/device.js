@@ -3,11 +3,6 @@ const Schema = mongoose.Schema;
 
 const DeviceSchema = new Schema(
   {
-    owner: {
-      type: Schema.Types.ObjectId,
-      ref: "Patient", // belongs to a Patient
-      required: true,
-    },
     hardwareId: {
       type: String,
       required: true,

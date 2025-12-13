@@ -37,7 +37,7 @@ router.get("/login", (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const { email, password, role, serialNumber, licenseId } = req.body;
+    const { email, password, role, deviceId, licenseId } = req.body;
 
     // User object to upload
     let userDetails = { email };
@@ -49,7 +49,7 @@ router.post("/register", async (req, res) => {
     if (role === "patient") {
       // for patient use deviceId
       const newDevice = new Device({
-        serial_number: serialNumber,
+        hardwareId: deviceId,
       });
       await newDevice.save();
       deviceIdToLink = newDevice._id;
