@@ -11,8 +11,10 @@ const LocalStrategy = require("passport-local");
 const ejsMate = require("ejs-mate");
 const methodOverried = require("method-override");
 const flash = require("connect-flash");
+const cors = require("cors");
 
 const app = express();
+const API_KEY = process.env.HEARTTRACK_API_KEY || "YOUR_SECRET_KEY";
 
 // Routes
 const userRoutes = require("./routes/users");
@@ -35,6 +37,8 @@ app.use(methodOverried("_method"));
 
 const Patient = require("./models/patient");
 const Physician = require("./models/physician");
+const Reading = require("./models/reading");
+const Device = require("./models/device");
 
 // The session
 const sessionConfig = {
@@ -51,6 +55,10 @@ const sessionConfig = {
 // This should be befoer passport session initialisation
 app.use(session(sessionConfig));
 app.use(flash());
+
+// Middleware
+app.use(cors());
+app.use(express.json());
 
 // Pasport Middlewares
 app.use(passport.initialize());
@@ -123,9 +131,13 @@ passport.deserializeUser(async function (serializedUser, done) {
 });
 
 app.use((req, res, next) => {
-  res.locals.currentUser = req.user;
+  // Make logged-in user (patient or physician) available in every EJS view
+  res.locals.currentUser = req.patient || req.physician || req.user || null;
+
+  // Flash messages
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
+
   next();
 });
 
@@ -147,6 +159,120 @@ app.get("/about", (req, res) => {
   });
 });
 
+app.post("/reading", async (req, res) => {
+  const {
+    apiKey,
+    deviceId,
+    heartRate: hrRaw,
+    spo2: spo2Raw,
+    timestamp,
+  } = req.body;
+
+  const isValidApiKey = apiKey === API_KEY;
+
+  console.log("Received JSON:", JSON.stringify(req.body, null, 4));
+  console.log("Validation Result:", isValidApiKey ? "Success" : "Failure");
+
+  if (!isValidApiKey) {
+    return res.status(403).json({
+      message: "Failure: Invalid API Key",
+      received: req.body,
+    });
+  }
+
+  // ---- Convert values to numbers ----
+  let heartRate = hrRaw !== undefined ? Number(hrRaw) : null;
+  let spo2 = spo2Raw !== undefined ? Number(spo2Raw) : undefined;
+
+  // ---- Handle your sentinel / bad readings ----
+  if (Number.isNaN(heartRate) || heartRate < 0 || heartRate === -999) {
+    console.log(
+      "Ignoring reading because heartRate is invalid/sentinel:",
+      hrRaw
+    );
+    return res.status(200).json({
+      message: "Invalid heart rate (sentinel or missing), reading ignored",
+      received: req.body,
+    });
+  }
+
+  if (Number.isNaN(spo2) || spo2 < 0 || spo2 === -999) {
+    console.log(
+      "SpO2 is invalid/sentinel, will be stored as undefined:",
+      spo2Raw
+    );
+    spo2 = undefined; // spo2 is optional in the schema
+  }
+
+  if (!deviceId) {
+    return res.status(400).json({
+      message: "Missing deviceId",
+      received: req.body,
+    });
+  }
+
+  // ---- Safely parse device timestamp → readingTime ----
+  let readingTime;
+  if (timestamp !== undefined) {
+    const tsNum = Number(timestamp);
+    if (!Number.isNaN(tsNum)) {
+      // timestamp is in UNIX seconds → convert to ms
+      readingTime = new Date(tsNum * 1000);
+    }
+  }
+
+  try {
+    // NEW: find the Device by hardwareId
+    const device = await Device.findOne({ hardwareId: deviceId }).populate(
+      "owner"
+    );
+    if (!device) {
+      console.error("Unknown device:", deviceId);
+      return res.status(404).json({
+        message: "Unknown deviceId (no matching Device found)",
+        received: req.body,
+      });
+    }
+
+    if (!device.owner) {
+      console.error("Device has no owner (Patient) set:", deviceId);
+      return res.status(500).json({
+        message: "Device has no associated patient",
+      });
+    }
+
+    // Build reading document
+    const readingData = {
+      device: device._id,
+      patient: device.owner._id,
+      heartRate,
+      spo2,
+      deviceHardwareId: deviceId, // optional, for debugging
+      raw: req.body,
+    };
+
+    if (readingTime) {
+      readingData.readingTime = readingTime;
+    }
+
+    const reading = await Reading.create(readingData);
+
+    // Optional: update last seen
+    device.lastSeenAt = new Date();
+    await device.save();
+
+    return res.status(201).json({
+      message: "Success! Reading stored",
+      id: reading._id,
+    });
+  } catch (err) {
+    console.error("Error saving reading:", err);
+    return res.status(500).json({
+      message: "Internal server error while saving reading",
+    });
+  }
+});
+
 app.all(/(.*)/, (req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
 });
@@ -154,6 +280,12 @@ app.all(/(.*)/, (req, res, next) => {
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = "Oh No, Something Went Wrong!";
+
+  // Ensure currentUser is available for error page navbar
+  if (!res.locals.currentUser) {
+    res.locals.currentUser = req.user || null;
+  }
+
   res.status(statusCode).render("error", {
     err,
     page_css: "error.css", // Pass the name of the stylesheet file

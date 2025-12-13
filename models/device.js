@@ -2,16 +2,33 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const DeviceSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
-    default: "Unnamed Device",
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: "Patient",        // belongs to a Patient
+      required: true,
+    },
+    hardwareId: {
+      type: String,
+      required: true,
+      unique: true,          // Particle device ID
+      trim: true,
+    },
+    label: {
+      type: String,
+      default: "My HeartTrack Device",
+    },
+    model: {
+      type: String,
+      default: "Photon 2",
+    },
+    firmwareVersion: String,
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    lastSeenAt: Date,
   },
-  serial_number: { type: String, required: true, unique: true },
-  // Additional fields, like last_reading, frequency, etc., go here
-  last_reading_bpm: { type: Number },
-  last_reading_recorded: { type: Date },
-  reading_freq: { type: Number },
-});
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("Device", DeviceSchema);

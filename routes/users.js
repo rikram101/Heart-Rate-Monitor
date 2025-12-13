@@ -94,9 +94,7 @@ router.post(
       role === "physician" ? "/physician/dashboard" : "/patient/dashboard";
     const redirectUrl = res.locals.returnTo || defaultDashboard;
     delete req.session.returnTo;
-    // Authentication succeeded. Determine redirect based on the authenticated user's type.
-    // We check the model name attached to req.user (provided by Passport).
-    res.redirect(redirectUrl); // Fallback
+    res.redirect(redirectUrl);
   }
 );
 

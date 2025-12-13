@@ -1,11 +1,15 @@
-<% if(success && success.length) {%>
-<div class="alert success-alert">
-  <h3><%= success %></h3>
-  <a class="close">&times;</a>
-</div>
-<% } %> <% if(error && error.length) {%>
-<div class="alert danger-alert">
-  <h3><%= error %></h3>
-  <a class="close">&times;</a>
-</div>
+<% if (typeof success !== 'undefined' && success && success.length) { %>
+  <div class="flash flash-success">
+    <% success.forEach(function(msg) { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
+<% } %>
+
+<% if (typeof error !== 'undefined' && error && error.length) { %>
+  <div class="flash flash-error">
+    <% error.forEach(function(msg) { %>
+      <p><%= msg %></p>
+    <% }) %>
+  </div>
 <% } %>
