@@ -1,297 +1,263 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title><%= title || "My Heart Data" %></title>
+<% layout('layouts/bootstrap')%>
 
-    <% if (typeof page_css !== "undefined" && page_css) { %>
-    <link rel="stylesheet" href="/stylesheets/<%= page_css %>" />
-    <% } %>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary">My Health Data</h1>
 
-    <style>
-      /* Minimal inline styling – keep or move to patient-readings.css */
-      .page-wrap {
-        max-width: 1100px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-        display: grid;
-        gap: 1.5rem;
-      }
-      .summary-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-      }
-      .summary-card {
-        padding: 1rem;
-        border-radius: 10px;
-        background: #0b1220;
-        border: 1px solid #1f2937;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-      }
-      .summary-label {
-        margin: 0;
-        color: #9ca3af;
-        font-size: 0.95rem;
-      }
-      .summary-value {
-        margin: 0.25rem 0 0;
-        font-size: 1.6rem;
-        font-weight: 600;
-        color: #e5e7eb;
-      }
-      .controls-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1rem;
-        align-items: center;
-      }
-      .controls-row label {
-        color: #cbd5e1;
-      }
-      .controls-row input[type="date"] {
-        background: #0b1220;
-        color: #e5e7eb;
-        border: 1px solid #1f2937;
-        border-radius: 6px;
-        padding: 0.35rem 0.5rem;
-      }
-      .charts-container {
-        display: grid;
-        gap: 1.5rem;
-      }
-      .chart-card {
-        padding: 1rem;
-        border-radius: 8px;
-        background: #111827;
-        border: 1px solid #1f2937;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-        height: 320px;
-        display: flex;
-        flex-direction: column;
-      }
-      .chart-title {
-        margin: 0 0 0.75rem;
-        font-size: 1.1rem;
-        color: #e5e7eb;
-      }
-      .empty-state {
-        text-align: center;
-        color: #cbd5e1;
-        padding: 2rem 1rem;
-      }
-      body {
-        background: #020617;
-        color: #e5e7eb;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-      }
-    </style>
-  </head>
-  <body>
-    <% if (typeof include !== "undefined") { %> <%-
-    include("../partials/navbar") %> <% } %>
+    <div class="d-flex gap-3">
+      <select id="viewSelector" class="form-select w-auto">
+        <option value="detailed">Detailed Daily View</option>
+        <option value="summary">Weekly Summary</option>
+      </select>
 
-    <main class="page-wrap">
-      <section class="summary-grid">
-        <div class="summary-card">
-          <p class="summary-label">7-day Avg Heart Rate</p>
-          <p class="summary-value" id="weeklyAvg">--</p>
+      <input type="date" id="datePicker" class="form-control w-auto" />
+    </div>
+  </div>
+
+  <div id="summarySection" class="d-none">
+    <div class="alert alert-info">
+      <h4 class="alert-heading">Weekly Overview (Last 7 Days)</h4>
+      <p class="mb-0">Aggregated statistics from all your devices.</p>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-danger h-100">
+          <div class="card-header bg-danger text-white">Heart Rate (BPM)</div>
+          <div class="card-body">
+            <h2 class="display-4" id="avgHeartRate">--</h2>
+            <p class="text-muted">7-Day Average</p>
+            <hr />
+            <div class="d-flex justify-content-around">
+              <div>
+                <span class="fw-bold text-success">Min</span>
+                <div id="minHeartRate" class="h5">--</div>
+              </div>
+              <div>
+                <span class="fw-bold text-danger">Max</span>
+                <div id="maxHeartRate" class="h5">--</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="summary-card">
-          <p class="summary-label">7-day Min Heart Rate</p>
-          <p class="summary-value" id="weeklyMin">--</p>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-primary h-100">
+          <div class="card-header bg-primary text-white">
+            Blood Oxygen (SpO2 %)
+          </div>
+          <div class="card-body">
+            <h2 class="display-4" id="avgSpo2">--</h2>
+            <p class="text-muted">7-Day Average</p>
+            <hr />
+            <div class="d-flex justify-content-around">
+              <div>
+                <span class="fw-bold text-warning">Min</span>
+                <div id="minSpo2" class="h5">--</div>
+              </div>
+              <div>
+                <span class="fw-bold text-success">Max</span>
+                <div id="maxSpo2" class="h5">--</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="summary-card">
-          <p class="summary-label">7-day Max Heart Rate</p>
-          <p class="summary-value" id="weeklyMax">--</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="detailedSection">
+    <div class="row">
+      <div class="col-12 mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-white">
+            <h5 class="card-title text-danger mb-0">❤️ Heart Rate Timeline</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="heartRateChart" height="100"></canvas>
+          </div>
         </div>
-      </section>
+      </div>
 
-      <section class="chart-card">
-        <h2 class="chart-title">Daily View</h2>
-        <div class="controls-row">
-          <label for="dayPicker">Select day:</label>
-          <input type="date" id="dayPicker" />
+      <div class="col-12 mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-white">
+            <h5 class="card-title text-primary mb-0">
+              💧 Blood Oxygen (SpO2) Timeline
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas id="spo2Chart" height="100"></canvas>
+          </div>
         </div>
-        <div class="charts-container" style="margin-top: 1rem">
-          <section class="chart-card" style="height: 300px">
-            <h2 class="chart-title">Heart Rate (bpm)</h2>
-            <canvas id="hrChart"></canvas>
-          </section>
+      </div>
+    </div>
+  </div>
+</div>
 
-          <section class="chart-card" style="height: 300px">
-            <h2 class="chart-title">SpO₂ (%)</h2>
-            <canvas id="spo2Chart"></canvas>
-          </section>
-        </div>
-      </section>
-    </main>
+<script>
+  // Initialize elements
+  const viewSelector = document.getElementById("viewSelector");
+  const datePicker = document.getElementById("datePicker");
+  const summarySection = document.getElementById("summarySection");
+  const detailedSection = document.getElementById("detailedSection");
 
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  // Set Date Picker to Today
+  datePicker.valueAsDate = new Date();
 
-    <script>
-      const formatTime = (date) =>
-        date.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        });
+  // Chart Instances (to destroy/recreate later)
+  let heartRateChartInstance = null;
+  let spo2ChartInstance = null;
 
-      const filterByDay = (readings, dayStr) => {
-        if (!dayStr) return [];
-        const start = new Date(`${dayStr}T00:00:00`);
-        const end = new Date(`${dayStr}T23:59:59.999`);
-        return readings.filter((r) => {
-          const t = new Date(r.readingTime);
-          return t >= start && t <= end;
-        });
-      };
+  // --- EVENT LISTENERS ---
 
-      const computeWeeklyStats = (readings) => {
-        const now = new Date();
-        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        const window = readings.filter(
-          (r) => new Date(r.readingTime) >= weekAgo
+  // 1. Switch Views
+  viewSelector.addEventListener("change", (e) => {
+    if (e.target.value === "summary") {
+      detailedSection.classList.add("d-none");
+      summarySection.classList.remove("d-none");
+      datePicker.classList.add("d-none"); // Hide date picker for summary
+      loadSummaryData();
+    } else {
+      summarySection.classList.add("d-none");
+      detailedSection.classList.remove("d-none");
+      datePicker.classList.remove("d-none");
+      loadDetailedData(datePicker.value);
+    }
+  });
+
+  // 2. Change Date (Detailed View)
+  datePicker.addEventListener("change", (e) => {
+    loadDetailedData(e.target.value);
+  });
+
+  // Initial Load
+  loadDetailedData(datePicker.value);
+
+  // --- FUNCTION: LOAD WEEKLY SUMMARY ---
+  async function loadSummaryData() {
+    try {
+      const res = await fetch("/patient/readings/summary");
+      const data = await res.json();
+
+      if (data.success && data.summary) {
+        const s = data.summary;
+        // Update DOM elements
+        document.getElementById("avgHeartRate").innerText = Math.round(
+          s.heartRate.avg || 0
         );
-        if (!window.length) return { avg: null, min: null, max: null };
-        const hr = window
-          .map((r) => Number(r.heartRate))
-          .filter((v) => Number.isFinite(v));
-        if (!hr.length) return { avg: null, min: null, max: null };
-        const sum = hr.reduce((a, b) => a + b, 0);
-        return {
-          avg: (sum / hr.length).toFixed(1),
-          min: Math.min(...hr),
-          max: Math.max(...hr),
-        };
-      };
+        document.getElementById("minHeartRate").innerText =
+          s.heartRate.min || "-";
+        document.getElementById("maxHeartRate").innerText =
+          s.heartRate.max || "-";
 
-      (async function () {
-        try {
-          const res = await fetch("/patient/readings/data");
-          const payload = await res.json();
+        document.getElementById("avgSpo2").innerText =
+          Math.round(s.spo2.avg || 0) + "%";
+        document.getElementById("minSpo2").innerText =
+          (s.spo2.min || "-") + "%";
+        document.getElementById("maxSpo2").innerText =
+          (s.spo2.max || "-") + "%";
+      }
+    } catch (err) {
+      console.error("Failed to load summary", err);
+    }
+  }
 
-          if (!payload.success) {
-            console.error("Error loading readings:", payload.message);
-            return;
-          }
+  // --- FUNCTION: LOAD DETAILED CHARTS ---
+  async function loadDetailedData(dateString) {
+    try {
+      const res = await fetch(`/patient/readings/daily?date=${dateString}`);
+      const json = await res.json();
 
-          const readings = payload.readings || [];
+      if (json.success) {
+        renderCharts(json.data.heartRate, json.data.spo2);
+      }
+    } catch (err) {
+      console.error("Failed to load daily charts", err);
+    }
+  }
 
-          const hrCtx = document.getElementById("hrChart").getContext("2d");
-          const spo2Ctx = document.getElementById("spo2Chart").getContext("2d");
-          let hrChart = null;
-          let spo2Chart = null;
+  // --- FUNCTION: RENDER CHARTS WITH CHART.JS ---
+  function renderCharts(hrData, spo2Data) {
+    // Destroy existing charts if they exist to prevent overlap
+    if (heartRateChartInstance) heartRateChartInstance.destroy();
+    if (spo2ChartInstance) spo2ChartInstance.destroy();
 
-          const renderCharts = (dayReadings) => {
-            const labels = dayReadings.map((r) =>
-              formatTime(new Date(r.readingTime))
-            );
-            const heartRates = dayReadings.map((r) => r.heartRate);
-            const spo2Values = dayReadings.map((r) => r.spo2);
+    // 1. Heart Rate Chart Configuration
+    const ctxHR = document.getElementById("heartRateChart").getContext("2d");
+    heartRateChartInstance = new Chart(ctxHR, {
+      type: "line",
+      data: {
+        datasets: [
+          {
+            label: "Heart Rate (BPM)",
+            data: hrData, // Expects {x: time, y: value} format
+            borderColor: "#dc3545",
+            backgroundColor: "rgba(220, 53, 69, 0.1)",
+            borderWidth: 2,
+            pointRadius: 3,
+            fill: true,
+            tension: 0.3, // Smooth curves
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: "time", // Requires chartjs-adapter-date-fns
+            time: {
+              unit: "hour",
+              displayFormats: { hour: "HH:mm" },
+            },
+            title: { display: true, text: "Time of Day" },
+          },
+          y: {
+            title: { display: true, text: "BPM" },
+            suggestedMin: 40,
+            suggestedMax: 120,
+          },
+        },
+      },
+    });
 
-            if (!hrChart) {
-              hrChart = new Chart(hrCtx, {
-                type: "line",
-                data: {
-                  labels,
-                  datasets: [
-                    {
-                      label: "Heart Rate (bpm)",
-                      data: heartRates,
-                      borderColor: "#22d3ee",
-                      backgroundColor: "rgba(34, 211, 238, 0.15)",
-                      borderWidth: 2,
-                      pointRadius: 0,
-                      tension: 0.25,
-                    },
-                  ],
-                },
-                options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: { title: { display: true, text: "Time of day" } },
-                    y: { title: { display: true, text: "bpm" } },
-                  },
-                },
-              });
-            } else {
-              hrChart.data.labels = labels;
-              hrChart.data.datasets[0].data = heartRates;
-              hrChart.update();
-            }
-
-            if (!spo2Chart) {
-              spo2Chart = new Chart(spo2Ctx, {
-                type: "line",
-                data: {
-                  labels,
-                  datasets: [
-                    {
-                      label: "SpO₂ (%)",
-                      data: spo2Values,
-                      borderColor: "#a78bfa",
-                      backgroundColor: "rgba(167, 139, 250, 0.15)",
-                      borderWidth: 2,
-                      pointRadius: 0,
-                      tension: 0.25,
-                    },
-                  ],
-                },
-                options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  scales: {
-                    x: { title: { display: true, text: "Time of day" } },
-                    y: {
-                      title: { display: true, text: "SpO₂ (%)" },
-                      suggestedMin: 90,
-                      suggestedMax: 100,
-                    },
-                  },
-                },
-              });
-            } else {
-              spo2Chart.data.labels = labels;
-              spo2Chart.data.datasets[0].data = spo2Values;
-              spo2Chart.update();
-            }
-          };
-
-          // Weekly summary
-          const stats = computeWeeklyStats(readings);
-          document.getElementById("weeklyAvg").textContent = stats.avg ?? "--";
-          document.getElementById("weeklyMin").textContent = stats.min ?? "--";
-          document.getElementById("weeklyMax").textContent = stats.max ?? "--";
-
-          const dayPicker = document.getElementById("dayPicker");
-          const todayStr = new Date().toISOString().slice(0, 10);
-          dayPicker.value = todayStr;
-
-          const renderDay = (dayStr) => {
-            const dayData = filterByDay(readings, dayStr);
-
-            // Empty state: show a friendly message if no data
-            if (!dayData.length) {
-              renderCharts([]);
-              return;
-            }
-
-            renderCharts(dayData);
-          };
-
-          dayPicker.addEventListener("change", (e) => {
-            renderDay(e.target.value);
-          });
-
-          renderDay(todayStr);
-        } catch (err) {
-          console.error("Failed to initialize charts:", err);
-        }
-      })();
-    </script>
-  </body>
-</html>
+    // 2. SpO2 Chart Configuration
+    const ctxSpo2 = document.getElementById("spo2Chart").getContext("2d");
+    spo2ChartInstance = new Chart(ctxSpo2, {
+      type: "line",
+      data: {
+        datasets: [
+          {
+            label: "SpO2 (%)",
+            data: spo2Data,
+            borderColor: "#0d6efd",
+            backgroundColor: "rgba(13, 110, 253, 0.1)",
+            borderWidth: 2,
+            pointRadius: 3,
+            fill: true,
+            tension: 0.3,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: "time",
+            time: {
+              unit: "hour",
+              displayFormats: { hour: "HH:mm" },
+            },
+            title: { display: true, text: "Time of Day" },
+          },
+          y: {
+            title: { display: true, text: "Percentage (%)" },
+            min: 80, // SpO2 is usually 95-100, dropping below 80 is rare/critical
+            max: 100,
+          },
+        },
+      },
+    });
+  }
+</script>

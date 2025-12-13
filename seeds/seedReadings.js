@@ -31,7 +31,7 @@ function generateSpO2(baseSpo2 = 97, variation = 2) {
 const seedReadings = async () => {
   try {
     // Get patient by email (change this to your logged-in email or pass as argument)
-    const targetEmail = process.argv[2] || "bob@email.com"; // Default to bob@email.com or pass email as argument
+    const targetEmail = process.argv[2] || "test@123.com"; // Default to bob@email.com or pass email as argument
     const patient = await Patient.findOne({ email: targetEmail });
 
     if (!patient) {
