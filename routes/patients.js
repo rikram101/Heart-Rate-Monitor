@@ -11,6 +11,7 @@ const {
   validateDevice,
   isPatient,
   isAssignedPhysician,
+  isPatientOrAssignedPhysician,
 } = require("../middleware");
 
 router.use(isLoggedIn, isPatient);
@@ -257,7 +258,7 @@ function getDateRange(dateString) {
 router.get(
   "/readings/daily",
   isLoggedIn,
-  isPatient,
+  isPatientOrAssignedPhysician,
   catchAsync(async (req, res) => {
     if (!req.user || req.user.role !== "patient") {
       return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -305,7 +306,7 @@ router.get(
 router.get(
   "/readings/summary",
   isLoggedIn,
-  isPatient,
+  isPatientOrAssignedPhysician,
   catchAsync(async (req, res) => {
     if (!req.user || req.user.role !== "patient") {
       return res.status(401).json({ success: false, message: "Unauthorized" });
