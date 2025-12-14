@@ -1,13 +1,157 @@
 <% layout('layouts/bootstrap')%>
-<form action="/patient/dashboard" method="POST">
-  <div>
-    <label for="name">Name</label>
-    <input type="text" id="name" name="device[name]" />
+
+<div class="container py-5">
+  <div class="row w-100">
+    <div>
+      <div class="card shadow-lg">
+        <div class="card-header bg-success text-white text-center">
+          <h1 class="h3 mb-0">Register New Health Monitoring Device</h1>
+        </div>
+        <div class="card-body">
+          <form
+            action="/patient/dashboard"
+            method="POST"
+            class="validated-form"
+            novalidate
+          >
+            <h5 class="mt-2 mb-3 border-bottom pb-2 text-primary">
+              Device Identification
+            </h5>
+
+            <div class="mb-3">
+              <label for="hardwareId" class="form-label">
+                Hardware ID (Particle Device ID)
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="hardwareId"
+                name="device[hardwareId]"
+                placeholder="e.g., 2d001e00..."
+                required
+              />
+              <div class="form-text">
+                This is the unique ID found on the hardware module.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="label" class="form-label"
+                >Device Nickname/Label</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="label"
+                name="device[label]"
+                placeholder="e.g., My Wrist Monitor"
+                required
+              />
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="model" class="form-label">Model Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="model"
+                  name="device[model]"
+                  value="Photon 2"
+                  required
+                />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="firmwareVersion" class="form-label"
+                  >Firmware Version</label
+                >
+                <input
+                  type="text"
+                  class="form-control"
+                  id="firmwareVersion"
+                  name="device[firmwareVersion]"
+                  placeholder="e.g., 1.0.1"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-check form-switch mb-3">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                id="isActive"
+                name="device[isActive]"
+                value="true"
+                checked
+              />
+              <label class="form-check-label" for="isActive">
+                Activate Device Upon Registration
+              </label>
+            </div>
+
+            <h5 class="mt-4 mb-3 border-bottom pb-2 text-primary">
+              Initial Measurement Schedule
+            </h5>
+
+            <div class="mb-3">
+              <label for="frequency" class="form-label">
+                Measurement Frequency (Minutes)
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                id="frequency"
+                name="device[measurementConfig][frequencyMinutes]"
+                value="30"
+                min="5"
+                required
+              />
+              <div class="form-text">
+                How often should the device attempt to request data (Min: 5
+                minutes)?
+              </div>
+            </div>
+
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <label for="startTime" class="form-label">Start Time</label>
+                <input
+                  type="time"
+                  class="form-control"
+                  id="startTime"
+                  name="device[measurementConfig][startTime]"
+                  value="06:00"
+                  required
+                />
+              </div>
+              <div class="col-md-6">
+                <label for="endTime" class="form-label">End Time</label>
+                <input
+                  type="time"
+                  class="form-control"
+                  id="endTime"
+                  name="device[measurementConfig][endTime]"
+                  value="22:00"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+              <button class="btn btn-success btn-lg">
+                <i class="fas fa-plus-circle me-2"></i> Add Device
+              </button>
+              <a
+                href="/patient/dashboard"
+                class="btn btn-outline-secondary btn-lg"
+              >
+                <i class="fas fa-arrow-left me-2"></i> Cancel
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
-  <div>
-    <label for="serial_number">Serial Number</label>
-    <input type="text" id="serial_number" name="device[serial_number]" />
-  </div>
-  <button>Add Device</button>
-  <a href="/patient/dashboard">Back to dashboard</a>
-</form>
+</div>

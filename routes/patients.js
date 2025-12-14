@@ -152,7 +152,7 @@ router.put(
       return res.redirect("/patient/dashboard");
     }
     req.flash("success", "Successfully Updated device Info");
-    res.redirect(`/patient/device/${updatedDevice._id}/edit`);
+    res.redirect("/patient/dashboard");
   })
 );
 
