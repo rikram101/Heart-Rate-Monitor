@@ -46,7 +46,7 @@ router
       req.user.devices.push(device._id);
       await req.user.save();
       req.flash("success", "A new Device was added Successfully");
-      res.redirect(`/patient/device/${device._id}`);
+      res.redirect(`/patient/readings/${device._id}`);
     })
   );
 

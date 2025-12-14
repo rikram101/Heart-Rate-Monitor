@@ -45,10 +45,13 @@ module.exports.deviceSchema = Joi.object({
           "number.min": "Frequency must be at least 5 minutes.",
           "number.base": "Frequency must be a number.",
         }),
-    }).required(), // The measurementConfig object itself is required
-
+    })
+      .required() // The measurementConfig object itself is required
+      .unknown(true),
     // FirmwareVersion is omitted as it's not editable or required for update
-  }).required(),
+  })
+    .required()
+    .unknown(true),
 });
 
 module.exports.physicianProfileSchema = Joi.object({
