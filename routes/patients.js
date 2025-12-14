@@ -147,6 +147,10 @@ router.put(
       },
       { new: true, runValidators: true }
     );
+    if (!updatedDevice) {
+      req.flash("error", "Device not found for update.");
+      return res.redirect("/patient/dashboard");
+    }
     req.flash("success", "Successfully Updated device Info");
     res.redirect(`/patient/device/${updatedDevice._id}/edit`);
   })

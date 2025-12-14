@@ -2,6 +2,7 @@ const Joi = require("joi");
 
 // Define the Device data validation rules
 module.exports.deviceSchema = Joi.object({
+  _method: Joi.string().optional(),
   // The top-level key should match the object you expect in req.body
   device: Joi.object({
     hardwareId: Joi.string().trim().required().messages({

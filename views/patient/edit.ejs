@@ -25,9 +25,10 @@
               <label class="form-label fw-bold">Hardware ID (Unique)</label>
               <input
                 type="text"
-                class="form-control"
+                class="form-control bg-secondary-subtle"
+                name="device[hardwareId]"
                 value="<%= device.hardwareId %>"
-                disabled
+                readonly
               />
               <div class="form-text">This unique ID cannot be changed.</div>
             </div>
@@ -37,9 +38,9 @@
                 <label class="form-label fw-bold">Model</label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control bg-secondary-subtle"
                   value="<%= device.model %>"
-                  disabled
+                  readonly
                 />
               </div>
 
@@ -47,9 +48,9 @@
                 <label class="form-label fw-bold">Firmware Version</label>
                 <input
                   type="text"
-                  class="form-control"
+                  class="form-control bg-secondary-subtle"
                   value="<%= device.firmwareVersion || 'N/A' %>"
-                  disabled
+                  readonly
                 />
               </div>
             </div>
