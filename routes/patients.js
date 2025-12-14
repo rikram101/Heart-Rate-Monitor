@@ -211,6 +211,7 @@ router.delete(
 router.get(
   "/readings/:id",
   isLoggedIn,
+  canViewDeviceData,
   catchAsync(async (req, res) => {
     const deviceId = req.params.id;
     const dateRange = await Reading.aggregate([
@@ -291,6 +292,7 @@ function getDateRange(dateString) {
 router.get(
   "/readings/:id/daily",
   isLoggedIn,
+  canViewDeviceData,
   catchAsync(async (req, res) => {
     if (!req.user || req.user.role !== "patient") {
       return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -338,6 +340,7 @@ router.get(
 router.get(
   "/readings/:id/summary",
   isLoggedIn,
+  canViewDeviceData,
   catchAsync(async (req, res) => {
     if (!req.user || req.user.role !== "patient") {
       return res.status(401).json({ success: false, message: "Unauthorized" });
