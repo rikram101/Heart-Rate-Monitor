@@ -109,17 +109,17 @@ router.get(
   })
 );
 router.get(
-  "/device/:id",
+  "/device/:id/edit",
+  isLoggedIn,
+  isDeviceOwner,
   catchAsync(async (req, res) => {
     const device = await Device.findById(req.params.id);
     if (!device) {
       req.flash("error", "Cannot find that Device!");
       return res.redirect("/patient/dashboard");
     }
-    res.render("patient/show_device", {
+    res.render("patient/readings", {
       device,
-      page_css: null,
-      page_script: null,
     });
   })
 );
@@ -129,9 +129,24 @@ router.put(
   validateDevice,
   catchAsync(async (req, res) => {
     const { id } = req.params;
-    const device = await Device.findByIdAndUpdate(id, {
-      ...req.body.device,
-    });
+    const { label, isActive, measurementConfig } = req.body.device;
+    const updatedDevice = await Device.findByIdAndUpdate(
+      id,
+      {
+        label: label,
+        // The checkbox sends 'true' as a string, convert it back to a boolean
+        isActive: isActive === "true",
+
+        // Use dot notation for nested updates (measurementConfig)
+        "measurementConfig.startTime": measurementConfig.startTime,
+        "measurementConfig.endTime": measurementConfig.endTime,
+        "measurementConfig.frequencyMinutes":
+          measurementConfig.frequencyMinutes,
+
+        // Mongoose option to return the *new* updated document
+      },
+      { new: true, runValidators: true }
+    );
     req.flash("success", "Successfully Updated device Info");
     res.redirect(`/patient/device/${device._id}`);
   })
