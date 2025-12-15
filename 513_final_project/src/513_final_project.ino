@@ -23,8 +23,8 @@ String hardwareId;                         // Particle device ID (hardwareId in 
 
 // ====================== Timing Settings ======================
 // For testing: 30 seconds. For production (spec), change to 30 minutes.
-const unsigned long MEAS_INTERVAL_MS  = 30000;                 // 30 seconds (testing)
-// const unsigned long MEAS_INTERVAL_MS  = 30UL * 60UL * 1000UL;  // 30 minutes (production)
+//const unsigned long MEAS_INTERVAL_MS  = 30000;                 // 30 seconds (testing)
+const unsigned long MEAS_INTERVAL_MS  = 30UL * 60UL * 1000UL;  // 30 minutes (production)
 
 const unsigned long PROMPT_TIMEOUT_MS = 5UL * 60UL * 1000UL;   // 5 minutes
 
