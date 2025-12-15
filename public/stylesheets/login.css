@@ -18,7 +18,9 @@
 .container {
   position: relative;
   width: 750px;
+  max-width: 95vw;
   height: 60vh;
+  max-height: 85vh;
   border: 2px solid #ff2770;
   box-shadow: 0 0 25px #ff2770;
   overflow: hidden;
@@ -290,4 +292,146 @@
 .container.active .curved-shape2 {
   transform: rotate(-11deg) skewY(-41deg);
   transition-delay: 1.2s;
+}
+
+/* Responsive: Tablet and below */
+/* @media screen and (max-width: 1024px) {
+  .container {
+    width: 680px;
+    height: auto;
+    max-height: none;
+  }
+  .info-content h2 {
+    font-size: 30px;
+  }
+  .form-box h2 {
+    font-size: 28px;
+  }
+} */
+
+/* Responsive: Small tablets / large phones */
+@media screen and (max-width: 768px) {
+  .container {
+    width: 560px;
+  }
+  .info-content.Login {
+    padding: 0 30px 40px 100px;
+  }
+  .info-content.Register {
+    padding: 0 100px 40px 28px;
+  }
+  .input-box {
+    height: 48px;
+  }
+  .btn {
+    height: 44px;
+  }
+  .container .curved-shape {
+    height: 520px;
+    width: 720px;
+  }
+  .container .curved-shape2 {
+    height: 620px;
+    width: 720px;
+    left: 200px;
+  }
+}
+
+/* Responsive: Phones */
+@media screen and (max-width: 600px) {
+  .container {
+    width: 100%;
+    max-width: 520px;
+    border: none;
+    box-shadow: none;
+  }
+  /* Stack content vertically; hide decorative shapes */
+  .container .curved-shape,
+  .container .curved-shape2 {
+    display: none;
+  }
+
+  /* Make form and info blocks full width stacked */
+  .container .form-box,
+  .info-content {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 24px 20px;
+  }
+  .form-box.Login,
+  .form-box.Register,
+  .info-content.Login,
+  .info-content.Register {
+    padding: 24px 20px;
+    text-align: left;
+  }
+
+  /* Hide register form by default on mobile */
+  .form-box.Register,
+  .info-content.Register {
+    display: none;
+  }
+
+  /* Show register form when container is active */
+  .container.active .form-box.Register,
+  .container.active .info-content.Register {
+    display: flex;
+  }
+
+  /* Hide login form when container is active */
+  .container.active .form-box.Login,
+  .container.active .info-content.Login {
+    display: none;
+  }
+
+  /* Override transforms for animations on small screens to avoid off-canvas */
+  .form-box.Login .animation,
+  .form-box.Register .animation,
+  .info-content.Login .animation,
+  .info-content.Register .animation,
+  .container.active .form-box.Login .animation,
+  .container.active .form-box.Register .animation,
+  .container.active .info-content.Login .animation,
+  .container.active .info-content.Register .animation {
+    transform: translateX(0) !important;
+    opacity: 1 !important;
+    filter: none !important;
+  }
+  .form-box h2 {
+    font-size: 24px;
+  }
+  .info-content h2 {
+    font-size: 26px;
+  }
+  .info-content p {
+    font-size: 15px;
+  }
+  .input-box {
+    margin-top: 20px;
+  }
+  .input-box input,
+  .input-box select {
+    font-size: 15px;
+  }
+  .input-box label {
+    font-size: 14px;
+  }
+  .regi-link {
+    font-size: 13px;
+    margin: 16px 0 8px;
+  }
+}
+
+/* Very small phones */
+@media screen and (max-width: 400px) {
+  .form-box h2 {
+    font-size: 22px;
+  }
+  .info-content h2 {
+    font-size: 24px;
+  }
+  .info-content p {
+    font-size: 14px;
+  }
 }

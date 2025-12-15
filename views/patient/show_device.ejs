@@ -1,22 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
-    <h1><%= device.name %></h1>
-    <h2><%= device.serial_number %></h2>
-    <p><a href="/patient/device/<%=device._id%>/edit">Edit</a></p>
-    <a href="/patient/dashboard">Back to dashboard</a>
-    <div>
-      <form
-        action="/patient/device/<%=device._id%>?_method=DELETE"
-        method="POST"
-      >
-        <button>Delete</button>
-      </form>
+<% layout('layouts/bootstrap')%>
+
+<div class="container py-4">
+  <div
+    class="d-flex justify-content-between align-items-center mb-5 border-bottom pb-3"
+  >
+    <h1 class="text-primary">
+      <i class="fas fa-user-circle me-2"></i> Device Data for
+      <b><%= patient.name %></b>
+    </h1>
+  </div>
+
+  <a href="/physician/dashboard" class="btn btn-secondary mb-4">
+    <i class="fas fa-arrow-left me-2"></i> Back to Patient List
+  </a>
+
+  <h2 class="mb-4 text-secondary">Select a Device to View Readings</h2>
+
+  <% if (devices && devices.length > 0) { %>
+  <div class="row row-cols-1 row-cols-md-2 g-4">
+    <% for (let device of devices){%>
+    <div class="col">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-info mb-3">
+            <i class="fas fa-microchip me-2"></i> <%= device.label %>
+          </h5>
+
+          <ul class="list-unstyled small text-muted flex-grow-1 mb-3">
+            <li><strong>Model:</strong> <%= device.model %></li>
+            <li><strong>Hardware ID:</strong> <%= device.hardwareId %></li>
+            <li>
+              <strong>Readings Frequency:</strong> Every <%=
+              device.measurementConfig.frequencyMinutes %> minutes
+            </li>
+          </ul>
+
+          <a
+            href="/patient/readings/<%= device._id %>"
+            class="mt-auto btn btn-success btn-block"
+          >
+            <i class="fas fa-chart-area me-2"></i> View Readings for This Device
+          </a>
+        </div>
+      </div>
     </div>
-  </body>
-</html>
+    <% }%>
+  </div>
+  <% } else { %>
+  <div class="alert alert-warning text-center mt-5" role="alert">
+    <p class="mb-0">This patient has no devices currently linked.</p>
+  </div>
+  <% } %>
+</div>

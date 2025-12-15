@@ -1,0 +1,146 @@
+<% layout('layouts/bootstrap')%>
+<div class="container d-flex justify-content-center align-items-center mb-5">
+  <div class="row w-100">
+    <div class="card shadow">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="card-title text-primary mb-0">
+            Manage Your Account Information
+          </h5>
+
+          <a href="/patient/dashboard" class="ml-auto">
+            <button type="button" class="btn btn-secondary btn-lg">
+              <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+          </a>
+        </div>
+        <p class="text-muted border-bottom pb-2">
+          Review and update your personal details and emergency contacts.
+        </p>
+
+        <form
+          action="/patient/accountInfo"
+          method="POST"
+          class="validated-form"
+          novalidate
+        >
+          <h6 class="text-secondary mb-3">Permanent Account Information</h6>
+
+          <div class="mb-3">
+            <label class="form-label text-muted" for="email"
+              >Email (Login ID, Cannot be changed)</label
+            >
+            <input
+              class="form-control bg-light border-secondary"
+              type="email"
+              id="email"
+              name="email"
+              value="<%= currentUser.email %>"
+              disabled
+            />
+          </div>
+
+          <hr class="my-4" />
+
+          <h6 class="text-primary mb-3">Editable Personal Details</h6>
+
+          <div class="mb-3">
+            <label class="form-label" for="name">Full Name</label>
+            <input
+              class="form-control"
+              type="text"
+              id="name"
+              name="name"
+              value="<%= currentUser.name !== 'Default User' ? currentUser.name : currentUser.name %>"
+              placeholder="John Doe"
+              minlength="3"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter your full name (at least 3 characters).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="dob">Date of Birth</label>
+            <input
+              class="form-control"
+              type="date"
+              id="dob"
+              name="dob"
+              value="<%= currentUser.dob ? currentUser.dob.toISOString().substring(0, 10) : '' %>"
+              max="<%= new Date().toISOString().split('T')[0] %>"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid date of birth (cannot be a future date).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input
+              class="form-control"
+              type="tel"
+              id="phone"
+              name="phone"
+              value="<%= currentUser.phone || '' %>"
+              placeholder="(123) 456-7890"
+              pattern="^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid 10-digit phone number (e.g., 555-555-5555).
+            </div>
+          </div>
+
+          <hr class="my-4" />
+
+          <h6 class="text-danger mb-3">Emergency Contact</h6>
+
+          <div class="mb-3">
+            <label class="form-label" for="emergencyContactName"
+              >Contact Name</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              id="emergencyContactName"
+              name="emergencyContactName"
+              value="<%= currentUser.emergencyContactName || '' %>"
+              placeholder="Spouse or Family Member Name"
+              minlength="3"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter the emergency contact's name (at least 3 characters).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="emergencyContactPhone"
+              >Contact Phone</label
+            >
+            <input
+              class="form-control"
+              type="tel"
+              id="emergencyContactPhone"
+              name="emergencyContactPhone"
+              value="<%= currentUser.emergencyContactPhone || '' %>"
+              placeholder="(987) 654-3210"
+              pattern="^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$"
+              required
+            />
+            <div class="invalid-feedback">
+              Please enter a valid 10-digit phone number for the contact.
+            </div>
+          </div>
+
+          <button class="btn btn-success btn-lg w-100 mt-4">
+            Update Account Info
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

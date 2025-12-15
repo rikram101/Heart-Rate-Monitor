@@ -1,0 +1,116 @@
+<% layout('layouts/bootstrap')%>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-primary">My Health Data</h1>
+
+    <div class="d-flex gap-3">
+      <% if (currentUser && currentUser.role === 'patient') { %>
+      <a href="/patient/device/<%= deviceId %>/edit" class="btn btn-warning">
+        <i class="fas fa-cog me-2"></i> Edit Device Settings
+      </a>
+      <% } %>
+      <select id="viewSelector" class="form-select w-auto">
+        <option value="detailed">Detailed Daily View</option>
+        <option value="summary">Weekly Summary</option>
+      </select>
+
+      <input type="date" id="datePicker" class="form-control w-auto" />
+    </div>
+  </div>
+
+  <div id="summarySection" class="d-none">
+    <div class="alert alert-info">
+      <h4 class="alert-heading">Weekly Overview (Last 7 Days)</h4>
+      <p class="mb-0">Aggregated statistics from all your devices.</p>
+    </div>
+
+    <div class="row text-center">
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-danger h-100">
+          <div class="card-header bg-danger text-white">Heart Rate (BPM)</div>
+          <div class="card-body">
+            <h2 class="display-4" id="avgHeartRate">--</h2>
+            <p class="text-muted">7-Day Average</p>
+            <hr />
+            <div class="d-flex justify-content-around">
+              <div>
+                <span class="fw-bold text-success">Min</span>
+                <div id="minHeartRate" class="h5">--</div>
+              </div>
+              <div>
+                <span class="fw-bold text-danger">Max</span>
+                <div id="maxHeartRate" class="h5">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div class="card shadow-sm border-primary h-100">
+          <div class="card-header bg-primary text-white">
+            Blood Oxygen (SpO2 %)
+          </div>
+          <div class="card-body">
+            <h2 class="display-4" id="avgSpo2">--</h2>
+            <p class="text-muted">7-Day Average</p>
+            <hr />
+            <div class="d-flex justify-content-around">
+              <div>
+                <span class="fw-bold text-warning">Min</span>
+                <div id="minSpo2" class="h5">--</div>
+              </div>
+              <div>
+                <span class="fw-bold text-success">Max</span>
+                <div id="maxSpo2" class="h5">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="detailedSection">
+    <div class="alert alert-secondary text-center">
+      Data available from
+      <span class="fw-bold"><%= earliestReadingDate %></span>
+      to
+      <span class="fw-bold"><%= latestReadingDate %></span>.
+    </div>
+    <div class="row">
+      <div class="col-12 mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-white">
+            <h5 class="card-title text-danger mb-0">❤️ Heart Rate Timeline</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="heartRateChart" height="100"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 mb-5">
+        <div class="card shadow">
+          <div class="card-header bg-white">
+            <h5 class="card-title text-primary mb-0">
+              💧 Blood Oxygen (SpO2) Timeline
+            </h5>
+          </div>
+          <div class="card-body">
+            <canvas id="spo2Chart" height="100"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const CURRENT_DEVICE_ID = "<%= deviceId %>";
+  const LATEST_READING_DATE = "<%= latestReadingDate%>";
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/date-fns@3.3.1/index.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<script src="/javascripts/readings.js"></script>

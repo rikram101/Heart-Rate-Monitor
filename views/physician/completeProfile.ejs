@@ -1,0 +1,149 @@
+<% layout('layouts/bootstrap')%>
+<div class="container d-flex justify-content-center align-items-center mb-5">
+  <div class="row w-100">
+    <div class="card shadow">
+      <div class="card-body">
+        <h5 class="card-title text-primary">Complete Your Profile</h5>
+        <p class="text-muted border-bottom pb-2">
+          Please fill out your professional details to finalize your account.
+        </p>
+        <img
+          src="<%= currentUser.image %>"
+          alt="<%= currentUser.name %>'s Profile Photo"
+          class="card-img-top mx-auto d-block"
+          style="
+            max-width: 400px;
+            height: auto;
+            object-fit: cover;
+            padding: 20px;
+          "
+        />
+
+        <form
+          action="/physician/complete-profile"
+          method="POST"
+          class="validated-form"
+          enctype="multipart/form-data"
+          novalidate
+        >
+          <h6 class="text-secondary mb-3">Permanent Account Information</h6>
+          <div class="mb-3">
+            <label class="form-label text-muted" for="email"
+              >Email (Cannot be changed)</label
+            >
+            <input
+              class="form-control bg-light border-secondary"
+              type="email"
+              id="email"
+              name="email"
+              value="<%= currentUser.email %>"
+              disabled
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted" for="licenseId"
+              >License ID (Cannot be changed)</label
+            >
+            <input
+              class="form-control bg-light border-secondary"
+              type="text"
+              id="licenseId"
+              name="licenseId"
+              value="<%= currentUser.licenseId %>"
+              disabled
+            />
+          </div>
+
+          <hr class="my-4" />
+
+          <h6 class="text-primary mb-3">Professional Details</h6>
+
+          <div class="mb-3">
+            <label class="form-label" for="name">Full Name</label>
+            <input
+              class="form-control"
+              type="text"
+              id="name"
+              name="name"
+              value="<%= currentUser.name !== 'Default User' ? currentUser.name : '' %>"
+              placeholder="Dr. Jane Doe"
+              required
+            />
+            <div class="invalid-feedback">Please enter your full name.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="image">Upload Profile Image</label>
+            <input
+              class="form-control"
+              type="file"
+              id="image"
+              name="image"
+              accept="image/*"
+            />
+            <div class="form-text">
+              Select an image file (JPG, PNG) from your device. Leaving this
+              blank will keep your existing photo.
+            </div>
+          </div>
+          <!-- <div class="mb-3">
+            <label class="form-label" for="image">Profile Image URL</label>
+            <input type="file" name="image" id="image" />
+            <input
+              class="form-control"
+              type="url"
+              id="image"
+              name="image"
+              placeholder="e.g., https://yourimage.com/photo.jpg"
+              value="<%= currentUser.image !== 'https://placehold.co/400x400/007bff/ffffff?text=Physician%20Photo' ? currentUser.image : '' %>"
+             />
+            <div class="form-text">
+              Paste a direct link (URL) to your profile picture.
+              <b>You can leave this field blank to use the default image.</b>
+            </div>
+            <div class="invalid-feedback">
+              Paste a direct link (URL) to your profile picture.
+            </div>
+          </div> -->
+
+          <div class="mb-3">
+            <label class="form-label" for="location"
+              >Location (City, State)</label
+            >
+            <input
+              class="form-control"
+              type="text"
+              id="location"
+              name="location"
+              placeholder="e.g., Tucson, AZ"
+              required
+            />
+            <div class="invalid-feedback">
+              Please provide your primary practice location (City, State).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label" for="description">About Me / Bio</label>
+            <textarea
+              class="form-control"
+              id="description"
+              name="description"
+              rows="3"
+              placeholder="Briefly describe your specialization and experience."
+              required
+            ></textarea>
+            <div class="invalid-feedback">
+              A brief professional description above 20 characters is required.
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-lg w-100 mt-4">
+            Complete Profile
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

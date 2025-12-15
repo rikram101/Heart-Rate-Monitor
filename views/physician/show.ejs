@@ -1,0 +1,44 @@
+<% layout('layouts/bootstrap')%>
+
+<div class="row">
+  <div class="col-6 offset-3">
+    <div class="card mb-3">
+      <img src="<%= physician.image%>" class="card-img-top" alt="..." />
+      <div class="card-body">
+        <h5 class="card-title"><%= physician.name%></h5>
+        <p class="card-text"><%= physician.description%></p>
+      </div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item text-muted"><%= physician.location%></li>
+      </ul>
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <% if (isChosen) { %>
+        <p class="mb-0 text-success">
+          You have already chosen <b><%= physician.name %></b> as your
+          physician.
+        </p>
+        <form
+          action="/patient/remove-physician/<%= physician._id %>?_method=DELETE"
+          method="POST"
+          class="d-inline"
+        >
+          <button class="btn btn-danger">Remove</button>
+        </form>
+        <% } else { %>
+        <p class="mb-0">
+          Choose <b><%= physician.name %></b> as your physician.
+        </p>
+
+        <form
+          action="/patient/choose-physician/<%= physician._id %>"
+          method="POST"
+          class="d-inline"
+        >
+          <button class="btn btn-primary">Choose</button>
+        </form>
+        <% } %>
+      </div>
+      <div class="card-footer text-muted">2 days ago</div>
+    </div>
+  </div>
+</div>

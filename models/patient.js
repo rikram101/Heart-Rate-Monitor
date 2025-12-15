@@ -9,10 +9,31 @@ const PatientSchema = new Schema({
     unique: true,
     trim: true,
   },
+  name: {
+    type: String,
+    required: true,
+    default: "Default User",
+  },
+  dob: Date,
+  phone: String,
+  emergencyContactName: String,
+  emergencyContactPhone: String,
+  role: {
+    type: String,
+    enum: ["patient"], // Restrict it to only the string 'patient'
+    default: "patient", // Automatically set this value on creation
+    required: true,
+  },
   devices: [
     {
       type: Schema.Types.ObjectId,
       ref: "Device",
+    },
+  ],
+  assignedPhysicians: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Physician",
     },
   ],
 });

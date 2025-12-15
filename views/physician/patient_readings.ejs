@@ -1,0 +1,257 @@
+<% layout('layouts/boilerplate')%>
+
+<style>
+  body {
+    background: #020617;
+    color: #e5e7eb;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .page-wrap {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 0 1rem 3rem;
+    display: grid;
+    gap: 1.5rem;
+  }
+  .back-link {
+    color: #38bdf8;
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .summary-card {
+    padding: 1rem;
+    border-radius: 10px;
+    background: #0b1220;
+    border: 1px solid #1f2937;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  }
+  .summary-label {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 0.95rem;
+  }
+  .summary-value {
+    margin: 0.25rem 0 0;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #e5e7eb;
+  }
+  .chart-card {
+    padding: 1rem;
+    border-radius: 8px;
+    background: #111827;
+    border: 1px solid #1f2937;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-title {
+    margin: 0 0 0.75rem;
+    font-size: 1.1rem;
+    color: #e5e7eb;
+  }
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+  }
+  .controls-row label { color: #cbd5e1; }
+  .controls-row input[type="date"] {
+    background: #0b1220;
+    color: #e5e7eb;
+    border: 1px solid #1f2937;
+    border-radius: 6px;
+    padding: 0.35rem 0.5rem;
+  }
+  .charts-container {
+    display: grid;
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+  .empty-state {
+    display: none;
+    text-align: center;
+    color: #cbd5e1;
+    padding: 1rem 0.5rem;
+  }
+</style>
+
+<div class="page-wrap">
+  <a class="back-link" href="/physician/dashboard">← Back to dashboard</a>
+  <div>
+    <h1 style="margin: 0.25rem 0 0.5rem;">Readings for <%= patient.email %></h1>
+    <p style="margin: 0; color: #9ca3af;">Up to the most recent 300 readings</p>
+  </div>
+
+  <section class="summary-grid">
+    <div class="summary-card">
+      <p class="summary-label">7-day Avg Heart Rate</p>
+      <p class="summary-value" id="weeklyAvg">--</p>
+    </div>
+    <div class="summary-card">
+      <p class="summary-label">7-day Min Heart Rate</p>
+      <p class="summary-value" id="weeklyMin">--</p>
+    </div>
+    <div class="summary-card">
+      <p class="summary-label">7-day Max Heart Rate</p>
+      <p class="summary-value" id="weeklyMax">--</p>
+    </div>
+  </section>
+
+  <section class="chart-card">
+    <h2 class="chart-title">Daily View</h2>
+    <div class="controls-row">
+      <label for="dayPicker">Select day:</label>
+      <input type="date" id="dayPicker" />
+    </div>
+    <div id="emptyState" class="empty-state">No readings for this day.</div>
+    <div class="charts-container">
+      <section class="chart-card" style="height: 300px;">
+        <h2 class="chart-title">Heart Rate (bpm)</h2>
+        <canvas id="hrChart"></canvas>
+      </section>
+
+      <section class="chart-card" style="height: 300px;">
+        <h2 class="chart-title">SpO₂ (%)</h2>
+        <canvas id="spo2Chart"></canvas>
+      </section>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const formatTime = (date) =>
+    date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+  const filterByDay = (readings, dayStr) => {
+    if (!dayStr) return [];
+    const start = new Date(`${dayStr}T00:00:00`);
+    const end = new Date(`${dayStr}T23:59:59.999`);
+    return readings.filter((r) => {
+      const t = new Date(r.readingTime);
+      return t >= start && t <= end;
+    });
+  };
+
+  const computeWeeklyStats = (readings) => {
+    const now = new Date();
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const window = readings.filter((r) => new Date(r.readingTime) >= weekAgo);
+    if (!window.length) return { avg: null, min: null, max: null };
+    const hr = window.map((r) => Number(r.heartRate)).filter((v) => Number.isFinite(v));
+    if (!hr.length) return { avg: null, min: null, max: null };
+    const sum = hr.reduce((a, b) => a + b, 0);
+    return {
+      avg: (sum / hr.length).toFixed(1),
+      min: Math.min(...hr),
+      max: Math.max(...hr),
+    };
+  };
+
+  (function () {
+    const readings = <%- JSON.stringify(readings || []) %>;
+
+    const hrCtx = document.getElementById("hrChart").getContext("2d");
+    const spo2Ctx = document.getElementById("spo2Chart").getContext("2d");
+    const emptyState = document.getElementById("emptyState");
+    let hrChart = null;
+    let spo2Chart = null;
+
+    const renderCharts = (dayReadings) => {
+      const labels = dayReadings.map((r) => formatTime(new Date(r.readingTime)));
+      const heartRates = dayReadings.map((r) => r.heartRate);
+      const spo2Values = dayReadings.map((r) => r.spo2);
+
+      if (!hrChart) {
+        hrChart = new Chart(hrCtx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Heart Rate (bpm)",
+              data: heartRates,
+              borderColor: "#22d3ee",
+              backgroundColor: "rgba(34, 211, 238, 0.15)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { title: { display: true, text: "Time of day" } },
+              y: { title: { display: true, text: "bpm" } },
+            },
+          },
+        });
+      } else {
+        hrChart.data.labels = labels;
+        hrChart.data.datasets[0].data = heartRates;
+        hrChart.update();
+      }
+
+      if (!spo2Chart) {
+        spo2Chart = new Chart(spo2Ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "SpO₂ (%)",
+              data: spo2Values,
+              borderColor: "#a78bfa",
+              backgroundColor: "rgba(167, 139, 250, 0.15)",
+              borderWidth: 2,
+              pointRadius: 0,
+              tension: 0.25,
+            }],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { title: { display: true, text: "Time of day" } },
+              y: { title: { display: true, text: "SpO₂ (%)" }, suggestedMin: 90, suggestedMax: 100 },
+            },
+          },
+        });
+      } else {
+        spo2Chart.data.labels = labels;
+        spo2Chart.data.datasets[0].data = spo2Values;
+        spo2Chart.update();
+      }
+    };
+
+    // Weekly summary
+    const stats = computeWeeklyStats(readings);
+    document.getElementById("weeklyAvg").textContent = stats.avg ?? "--";
+    document.getElementById("weeklyMin").textContent = stats.min ?? "--";
+    document.getElementById("weeklyMax").textContent = stats.max ?? "--";
+
+    const dayPicker = document.getElementById("dayPicker");
+    const defaultDay = readings.length
+      ? new Date(readings[readings.length - 1].readingTime).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10);
+    dayPicker.value = defaultDay;
+
+    const renderDay = (dayStr) => {
+      const dayData = filterByDay(readings, dayStr);
+      emptyState.style.display = dayData.length ? "none" : "block";
+      renderCharts(dayData);
+    };
+
+    dayPicker.addEventListener("change", (e) => {
+      renderDay(e.target.value);
+    });
+
+    renderDay(defaultDay);
+  })();
+</script>
