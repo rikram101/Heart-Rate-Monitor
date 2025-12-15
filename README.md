@@ -29,6 +29,9 @@ HeartTrack is an IoT-enabled monitoring system built around a **Particle Photon 
 2. Particle Cloud account + access to Particle Console
 3. Backend/server environment (Node.js) + MongoDB (if running locally)
 
+## Steps (Userpage)
+write steps(Tanmay)
+
 ## Steps (Particle / Firmware)
 1. Wire the MAX30105 to the Photon 2 (I2C + power + ground).
 2. Open the Particle firmware project in VS Code (Particle Workbench).
