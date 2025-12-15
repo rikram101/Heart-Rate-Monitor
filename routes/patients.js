@@ -354,6 +354,7 @@ router.get(
   "/readings/:id/daily",
   isLoggedIn,
   catchAsync(async (req, res) => {
+    const targetDeviceId = req.params.id;
     // Get the date from the query parameter (e.g., ?date=2025-12-12)
     const { date } = req.query;
     if (!date) {
@@ -366,7 +367,7 @@ router.get(
 
     // 1. Find all devices owned by this patient (using the updated schema)
     // The patient model now holds the device IDs.
-    const deviceIds = req.user.devices;
+    const deviceIds = new mongoose.Types.ObjectId(targetDeviceId);
 
     // 2. Fetch readings for the specific day
     const readings = await Reading.find({
