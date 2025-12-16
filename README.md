@@ -81,12 +81,27 @@ Patients can grant access to medical professionals for remote monitoring.
 4. Confirm the device comes online in Particle Console and is publishing events.
 
 ## Steps (Server)
-1. Start the server:
-   - `sh run_server.sh`
-2. Run continuously:
-   - `sh run_server_nonstop.sh`
-3. Kill the server:
-   - `sh kill_server.sh`
+1. Clone the repository
+git clone <repo-url>
+cd Heart-Rate-Monitor
+2. Install dependencies
+npm install
+3. Configure environment variables
+Create a .env file and set required values (e.g., MongoDB URI, API key, AWS credentials, port):
+PORT=8080
+MONGODB_URI=...
+API_KEY=...
+AWS_REGION=...
+AWS_BUCKET_NAME=...
+4. Start MongoDB
+Ensure MongoDB is running locally or accessible via the configured URI.
+5. Run the server
+npm start
+or (for development with auto-reload):
+npm run dev
+6. Access the application
+Open a browser and navigate to:
+http://localhost:8080
 
 # Links + Demo Login
 - Server: https://ec2-3-138-118-190.us-east-2.compute.amazonaws.com/
