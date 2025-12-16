@@ -54,11 +54,11 @@ HeartTrack is an IoT-enabled monitoring system built around a **Particle Photon 
 - Server: https://ec2-3-138-118-190.us-east-2.compute.amazonaws.com/
 - Milestone Demo Video: https://emailarizona-my.sharepoint.com/personal/rikram101_arizona_edu/_layouts/15/stream.aspx?id=%2Fpersonal%2Frikram101%5Farizona%5Fedu%2FDocuments%2FRecordings%2FTest%20recording%201%2D20251121%5F190906%2DMeeting%20Recording%2Emp4&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&referrer=StreamWebApp%2EWeb&referrerScenario=AddressBarCopied%2Eview%2E4aec07d0%2Db34e%2D4f70%2D8735%2Dcff4b4ebbe22)
 - Pitch Video: (paste link here)
-- Final Demo Video: (paste link here)
+- Final Demo Video: https://arizona.zoom.us/rec/play/05FLzqTJvgM1DgHDsPFUWaE2mjfV-BBLVmCamY5lXTsKX3Z_f_QGhSY-RwImx-RWGS2HProDJxn_jA5e.XES6bBvzHtkpGwXY?autoplay=true&startTime=1765862658000
 
 Existing user account (recent data):
-- Email: 
-- Password: 
+- Email: Tony@email.com
+- Password: 1234567
 
 
 # Contact
