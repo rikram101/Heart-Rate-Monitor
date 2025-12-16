@@ -109,10 +109,12 @@ http://localhost:8080
 - Pitch Video: https://arizona.zoom.us/rec/play/y-FEj5uqyn-IlQJBWkvS13OiE9uCdTMgzrHYhAEzhdSf0ya9AiW6TQX1BFsoQLVHA4-PXQ4hyHfcSZQ8.cISI1joNh5-qbSOv?autoplay=true&startTime=1765865651000
 - Final Demo Video: https://arizona.zoom.us/rec/play/05FLzqTJvgM1DgHDsPFUWaE2mjfV-BBLVmCamY5lXTsKX3Z_f_QGhSY-RwImx-RWGS2HProDJxn_jA5e.XES6bBvzHtkpGwXY?autoplay=true&startTime=1765862658000
 
-Existing user account (recent data):
+Existing patient account (recent data):
 - Email: Tony@email.com
 - Password: 1234567
-
+Existing physician account  (recent data):
+- Email: DoctorSmith@email.com
+- Password:passward123
 
 # Contact
 Contributors:
